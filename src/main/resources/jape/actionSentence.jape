@@ -1,0 +1,28 @@
+Phase: GetActionSentence
+Input: Lookup Token Sentence 
+Options: control = brill
+
+Rule: actionSentenceNV
+(
+	(
+		
+		{Token.category == NN}
+		({Token.category == VB}|{Token.category == MD})
+		{Token.category == VB}
+		
+
+	):actionSentencenvv
+	|
+	(
+		
+		({Token.category == NN})?
+		({Token.category == VB}|{Token.category == MD})
+		{Token.category == NN}
+		
+
+	):actionSentencenvn
+)
+-->
+:actionSentencenvv.ActionSentence = {rule="Action SentenceNVV"},
+
+:actionSentencenvn.ActionSentence = {rule="Action SentenceNVN"}

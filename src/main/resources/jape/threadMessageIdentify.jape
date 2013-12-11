@@ -1,0 +1,20 @@
+Phase: GetThreads
+Input: Lookup Token Thread
+Options: control = all
+
+Rule: threadMessageIdentify
+(
+	(
+		{Thread}
+		(
+			({Token, !Thread.category == "Thread Header"})+
+		):threadbody
+		
+	):thread
+	{Thread}
+)
+
+-->
+
+:threadbody.ThreadPart = {rule="Thread", category = "Thread Body"},
+:thread.Thread = {rule="Thread", category = "Thread Main"}

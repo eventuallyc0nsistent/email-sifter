@@ -1,0 +1,72 @@
+Phase: GetThreads
+Input: Lookup Token Split Sentence Person Date Address
+Options: control = appelt
+
+Macro: PERSON_IDENTIFIER
+(
+	{Person}
+	|
+	(	
+		{Token.kind == word, Token.category == NNP, Token.orth == upperInitial}
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+	)
+	|
+	(
+		{Person}
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+	)
+	|
+	(
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+		{Person}
+	)
+)
+
+Rule: threadIdentify
+(	
+	(
+		(PERSON_IDENTIFIER)?
+		({Token.kind == symbol, Token.string == "<"})?
+		{Address.kind == email}
+		({Token.kind == symbol, Token.string == ">"})?
+	):sender
+
+	{Date.kind == date}
+	{Token.kind == word, Token.string == "at"}
+	{Date.kind == time}
+
+	(
+		{Token.kind == word, Token.string == "To"}
+		{Token.kind == punctuation, Token.string == ":"}
+		(
+			(PERSON_IDENTIFIER)?
+			({Token.kind == symbol, Token.string == "<"})?
+			{Address.kind == email}
+			({Token.kind == symbol, Token.string == ">"})?
+			({Token.kind == punctuation, Token.string == ","})?
+		)+
+	):toperson
+
+	(
+		(
+			{Token.kind == word, Token.string == "Cc"}
+			{Token.kind == punctuation, Token.string == ":"}
+			(
+				(PERSON_IDENTIFIER)?
+				({Token.kind == symbol, Token.string == "<"})?
+				{Address.kind == email}
+				({Token.kind == symbol, Token.string == ">"})?
+				({Token.kind == punctuation, Token.string == ","})?
+			)+
+		)*
+	):ccperson
+
+):threadheader
+
+-->
+
+:sender.ThreadPart = {rule="Thread", category = "Sender"},
+:toperson.ThreadPart = {rule="Thread", category = "Receiver"},
+:ccperson.ThreadPart = {rule="Thread", category = "CC"},
+:threadheader.Thread = {rule="Thread", category = "Thread Header"}
