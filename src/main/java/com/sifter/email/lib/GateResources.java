@@ -9,22 +9,58 @@ import gate.util.*;
 import gate.corpora.RepositioningInfo;
 public class GateResources {
 
-	private SerialAnalyserController sac=new SerialAnalyserController();
-	private SerialAnalyserController sac2=new SerialAnalyserController();
+	private SerialAnalyserController sac= null;
+	private SerialAnalyserController sac2= null;
+	private static GateResources instance = null;
 
-	public void initJape()
+	//Creating a singleton
+	protected GateResources() throws GateException{
+		Gate.setGateHome(new File(getClass().getResource("/").getPath()));
+		File gateHome = Gate.getGateHome();
+		File pluginsHome = new File(gateHome,"plugins");
+		Gate.setPluginsHome(pluginsHome);
+		Gate.init();
+		sac = new SerialAnalyserController();
+		sac2 = new SerialAnalyserController();
+	}
+
+
+	public static GateResources getInstance() throws GateException{
+		if(instance == null){
+			instance = new GateResources();
+		}
+
+		return instance;
+	}
+
+	public void initialize()
 	{
 		try {
+
+			//Gate.init();
+
+			//Gate.getCreoleRegister().registerDirectories(new File(Gate.getGateHome().getAbsolutePath()+ "resources/plugins/ANNIE/").toURI().toURL());
+			Gate.getCreoleRegister().registerDirectories(getClass().getResource("/plugins/ANNIE"));
+
+
 			sac=(SerialAnalyserController)Factory.createResource("gate.creole.SerialAnalyserController",Factory.newFeatureMap(),Factory.newFeatureMap(),"ANNIE+"+Gate.genSym());
 			sac2=(SerialAnalyserController)Factory.createResource("gate.creole.SerialAnalyserController",Factory.newFeatureMap(),Factory.newFeatureMap());
 			FeatureMap params=Factory.newFeatureMap();
 			FeatureMap transducerparam=Factory.newFeatureMap();
-			FeatureMap gazparam=Factory.newFeatureMap();
-			gazparam.put("listsURL", "/home/developer/corpus/jape/Tutorial/Examples/Example1/theme.def");
-			transducerparam.put("grammarURL", "/home/developer/corpus/jape/Tutorial/Examples/Example1/negation.jape");
+			
+			//get the jape transducer that was built
+			transducerparam.put("grammarURL", getClass().getResource("/jape/main.jape"));
 			ProcessingResource pr1=(ProcessingResource) Factory.createResource("gate.creole.annotdelete.AnnotationDeletePR", params);
 			ProcessingResource pr2=(ProcessingResource) Factory.createResource("gate.creole.tokeniser.DefaultTokeniser", params);
-			ProcessingResource pr3=(ProcessingResource) Factory.createResource("gate.creole.gazetteer.DefaultGazetteer", gazparam);
+			
+			
+			//Assign any gazetteers here
+			//FeatureMap gazparam=Factory.newFeatureMap();
+			//gazparam.put("listsURL", getClass().getResource("/plugins/gaz/xyz.def"));
+			//ProcessingResource pr3=(ProcessingResource) Factory.createResource("gate.creole.gazetteer.DefaultGazetteer", gazparam);
+			
+			
+			
 			ProcessingResource pr4=(ProcessingResource) Factory.createResource("gate.creole.splitter.SentenceSplitter", params);
 			ProcessingResource pr5=(ProcessingResource) Factory.createResource("gate.creole.Transducer", transducerparam);
 			/*        ProcessingResource pr1 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpTokenizer", params);
@@ -36,12 +72,12 @@ public class GateResources {
 
 			sac.add(pr1);
 			sac.add(pr2);
-			sac2.add(pr3);
+			//sac2.add(pr3);
 			sac2.add(pr4);
 			sac2.add(pr5);
 			Out.prln("Processing resources are loaded");
 		}
-		catch (ResourceInstantiationException e) 
+		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
@@ -51,44 +87,52 @@ public class GateResources {
 		sac2.setCorpus(corpus);                
 	}
 	public void execute() throws GateException {
-		Out.prln("Running OpenNLP...");
+		Out.prln("Running");
 		sac.execute();
 		sac2.execute();
 	}
-	public static void main(String a[])
+	public static void main(String a[]) throws MalformedURLException
 	{
 		try {
-			Gate.init();
 			File gateHome = Gate.getGateHome();
-			File pluginsHome = new File(gateHome, "plugins");
-			Gate.getCreoleRegister().registerDirectories(new File(Gate.getGateHome().getAbsolutePath()+ "resources/plugins/ANNIE/").toURI().toURL());
-			//Gate.getCreoleRegister().registerDirectories(new File(pluginsHome,"ANNIE").toURL());
+			GateResources glp = GateResources.getInstance();
 
-			GateResources glp=new GateResources();
-
-			glp.initJape();
+			glp.initialize();
 			Corpus corpus = (Corpus) Factory
 					.createResource("gate.corpora.CorpusImpl");
-			File[] files = new File("/home/developer/corpus/jape/Tutorial/Examples/Example1/txt/").listFiles();
-			for (File s : files) {
-				if(s.getName().endsWith(".txt"))
-				{
-					URL u = null;
-					try {
-						u = new URL("file://" + s.getAbsolutePath());
-						FeatureMap params = Factory.newFeatureMap();
-						params.put("sourceUrl", u);
-						params.put("preserveOriginalContent", new Boolean(true));
-						params.put("collectRepositioningInfo", new Boolean(true));
-						Out.prln("Creating doc for " + u);
-						Document doc = (Document) Factory.createResource("gate.corpora.DocumentImpl", params);
-						corpus.add(doc);
-					} catch (MalformedURLException m) {
-						System.out.print(u);
-						m.printStackTrace();
-					}
-				}
-			}
+			File[] files = new File(GateResources.class.getResource("/docs/").getPath()).listFiles();
+			//			for (File s : files) {
+			//				//if(s.getName().endsWith(".txt"))
+			//				//{
+			//				URL u = null;
+			//				try {
+			//					u = new URL("file://" + s.get);
+			//					FeatureMap params = Factory.newFeatureMap();
+			//					params.put("sourceUrl", u);
+			//					params.put("preserveOriginalContent", new Boolean(true));
+			//					params.put("collectRepositioningInfo", new Boolean(true));
+			//					Out.prln("Creating doc for " + u);
+			//					Document doc = (Document) Factory.createResource("gate.corpora.DocumentImpl", params);
+			//					corpus.add(doc);
+			//				} catch (MalformedURLException m) {
+			//					System.out.print(u);
+			//					m.printStackTrace();
+			//				}
+			//				//}
+			//			}
+
+			URL u = null;
+			u = GateResources.class.getResource("/docs/Introduction.pdf");
+			FeatureMap params = Factory.newFeatureMap();
+			params.put("sourceUrl", u);
+			params.put("preserveOriginalContent", new Boolean(true));
+			params.put("collectRepositioningInfo", new Boolean(true));
+			Out.prln("Creating doc for " + u);
+			Document temp = (Document) Factory.createResource("gate.corpora.DocumentImpl", params);
+			corpus.add(temp);
+
+
+
 			glp.setCorpus(corpus);
 			glp.execute();
 			Iterator iter = corpus.iterator();
@@ -103,51 +147,51 @@ public class GateResources {
 				DocumentContent dc=doc.getContent();
 
 				//String txt=
-						AnnotationSet defaultAnnotSet = doc.getAnnotations();
-						Set annotTypesRequired = new HashSet();
-						annotTypesRequired.add("Sentence");
-						annotTypesRequired.add("negatednegative");
-						annotTypesRequired.add("negatedpositive");
-						annotTypesRequired.add("food");
-						annotTypesRequired.add("service");
-						annotTypesRequired.add("room");
-						annotTypesRequired.add("clean");
-						annotTypesRequired.add("location");
-						annotTypesRequired.add("value");
+				AnnotationSet defaultAnnotSet = doc.getAnnotations();
+				Set<String> annotTypesRequired = new HashSet<String>();
+				annotTypesRequired.add("Sentence");
+				annotTypesRequired.add("SubjectMail");
+				annotTypesRequired.add("ThreadPart");
+				annotTypesRequired.add("Thread");
+//				annotTypesRequired.add("service");
+//				annotTypesRequired.add("room");
+//				annotTypesRequired.add("clean");
+//				annotTypesRequired.add("location");
+//				annotTypesRequired.add("value");
 
 
-						// annotTypesRequired.add("Location");
-						Set<Annotation> peopleAndPlaces = new HashSet<Annotation>(defaultAnnotSet.get(annotTypesRequired));
-						FeatureMap features = doc.getFeatures();
-						String originalContent = (String) features
-								.get(GateConstants.ORIGINAL_DOCUMENT_CONTENT_FEATURE_NAME);
-						RepositioningInfo info = (RepositioningInfo) features
-								.get(GateConstants.DOCUMENT_REPOSITIONING_INFO_FEATURE_NAME);
-						++count;
-						File file = new File("ANNIE_" + count + ".HTML");
-						//if (originalContent != null && info != null) {
-						Out.prln("OrigContent and reposInfo existing. Generate file...");
-						Iterator it = peopleAndPlaces.iterator();
-						Annotation currAnnot;
-						SortedAnnotationList sortedAnnotations = new SortedAnnotationList();
-						while (it.hasNext()) {
-							currAnnot = (Annotation) it.next();
-							Out.prln(currAnnot.getType() +"  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue()));
-							FeatureMap fm = currAnnot.getFeatures();
-							for (Map.Entry<Object, Object> e : fm.entrySet()) {
-								Out.prln("Type "+e.getKey()+"  Value " + e.getValue());                                        
-							}
-							sortedAnnotations.addSortedExclusive(currAnnot);
-						} // while
-						String xmlDocument = doc.toXml(peopleAndPlaces, false);
-						//System.out.println(xmlDocument);
-						String fileName = new String("GATE" + count + ".HTML");
-						FileWriter writer = new FileWriter(fileName);
-						writer.write(xmlDocument);
-						writer.close();
+				// annotTypesRequired.add("Location");
+				Set<Annotation> peopleAndPlaces = new HashSet<Annotation>(defaultAnnotSet.get(annotTypesRequired));
+				FeatureMap features = doc.getFeatures();
+				String originalContent = (String) features
+						.get(GateConstants.ORIGINAL_DOCUMENT_CONTENT_FEATURE_NAME);
+				RepositioningInfo info = (RepositioningInfo) features
+						.get(GateConstants.DOCUMENT_REPOSITIONING_INFO_FEATURE_NAME);
+				++count;
+				File file = new File("ANNIE_" + count + ".HTML");
+				//if (originalContent != null && info != null) {
+				Out.prln("OrigContent and reposInfo existing. Generate file...");
+				Iterator it = peopleAndPlaces.iterator();
+				Annotation currAnnot;
+				SortedAnnotationList sortedAnnotations = new SortedAnnotationList();
+				while (it.hasNext()) {
+					currAnnot = (Annotation) it.next();
+					Out.prln(currAnnot.getType() +"  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue()));
+					FeatureMap fm = currAnnot.getFeatures();
+					for (Map.Entry<Object, Object> e : fm.entrySet()) {
+						Out.prln("Type "+e.getKey()+"  Value " + e.getValue());                                        
+					}
+					sortedAnnotations.addSortedExclusive(currAnnot);
+				} // while
+				String xmlDocument = doc.toXml(peopleAndPlaces, false);
+				//System.out.println(xmlDocument);
+				String fileName = new String("GATE" + count + ".HTML");
+				FileWriter writer = new FileWriter(fileName);
+				writer.write(xmlDocument);
+				writer.close();
 
-						// do something useful with the XML here!
-						// Out.prln("'"+xmlDocument+"'");
+				// do something useful with the XML here!
+				// Out.prln("'"+xmlDocument+"'");
 			} // for each doc
 		} catch (GateException e) {
 			e.printStackTrace();

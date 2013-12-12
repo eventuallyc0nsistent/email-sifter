@@ -1,0 +1,6 @@
+MultiPhase:	EmailSifter
+Phases: 
+subjectMail
+threadHeaderIdentify
+threadMessageIdentify
+actionSentence
