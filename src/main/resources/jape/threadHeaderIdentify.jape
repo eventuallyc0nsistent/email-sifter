@@ -1,5 +1,5 @@
 Phase: GetThreads
-Input: Lookup Token Split Sentence Person Date Address
+Input: Token Person Date Address
 Options: control = appelt
 
 Macro: PERSON_IDENTIFIER
@@ -28,7 +28,7 @@ Rule: threadIdentify
 	(
 		(PERSON_IDENTIFIER)?
 		({Token.kind == symbol, Token.string == "<"})?
-		{Address.kind == email}
+		({Address.kind == email}): fromEmailAddr
 		({Token.kind == symbol, Token.string == ">"})?
 	):sender
 
@@ -42,7 +42,7 @@ Rule: threadIdentify
 		(
 			(PERSON_IDENTIFIER)?
 			({Token.kind == symbol, Token.string == "<"})?
-			{Address.kind == email}
+			({Address.kind == email}):toEmailAddr
 			({Token.kind == symbol, Token.string == ">"})?
 			({Token.kind == punctuation, Token.string == ","})?
 		)+
@@ -55,7 +55,7 @@ Rule: threadIdentify
 			(
 				(PERSON_IDENTIFIER)?
 				({Token.kind == symbol, Token.string == "<"})?
-				{Address.kind == email}
+				({Address.kind == email}):ccEmailAddr
 				({Token.kind == symbol, Token.string == ">"})?
 				({Token.kind == punctuation, Token.string == ","})?
 			)+
@@ -69,4 +69,7 @@ Rule: threadIdentify
 :sender.ThreadPart = {rule="Thread", category = "Sender"},
 :toperson.ThreadPart = {rule="Thread", category = "Receiver"},
 :ccperson.ThreadPart = {rule="Thread", category = "CC"},
-:threadheader.Thread = {rule="Thread", category = "Thread Header"}
+:threadheader.Thread = {rule="Thread", category = "Thread Header"},
+:toEmailAddr.Email = {rule="Thread", category = "To Email"},
+:ccEmailAddr.Email = {rule="Thread", category="CC Email"},
+:fromEmailAddr.Email = {rule="Thread", category="From Email"}

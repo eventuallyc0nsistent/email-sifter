@@ -1,5 +1,5 @@
 Phase: GetMailSubject
-Input: Lookup Token Split Sentence Date
+Input: Token Date
 Options: control = once
 
 Rule: subjectMail

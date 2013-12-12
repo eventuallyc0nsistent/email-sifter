@@ -1,5 +1,5 @@
 Phase: GetActionSentence
-Input: Lookup Token Sentence 
+Input: Token 
 Options: control = brill
 
 Rule: actionSentenceNV

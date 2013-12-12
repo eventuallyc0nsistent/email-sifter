@@ -6,6 +6,7 @@ import java.net.*;
 import gate.*;
 import gate.creole.*;
 import gate.util.*;
+import gate.util.persistence.PersistenceManager;
 import gate.corpora.RepositioningInfo;
 public class GateResources {
 
@@ -36,32 +37,11 @@ public class GateResources {
 	public void initialize()
 	{
 		try {
-
-			//Gate.init();
-
-			//Gate.getCreoleRegister().registerDirectories(new File(Gate.getGateHome().getAbsolutePath()+ "resources/plugins/ANNIE/").toURI().toURL());
-			Gate.getCreoleRegister().registerDirectories(getClass().getResource("/plugins/ANNIE"));
-
-
-			sac=(SerialAnalyserController)Factory.createResource("gate.creole.SerialAnalyserController",Factory.newFeatureMap(),Factory.newFeatureMap(),"ANNIE+"+Gate.genSym());
-			sac2=(SerialAnalyserController)Factory.createResource("gate.creole.SerialAnalyserController",Factory.newFeatureMap(),Factory.newFeatureMap());
-			FeatureMap params=Factory.newFeatureMap();
+			sac = (SerialAnalyserController)PersistenceManager.loadObjectFromFile(new File(getClass().getResource("/plugins/ANNIE/"+ANNIEConstants.DEFAULT_FILE).getPath()));
 			FeatureMap transducerparam=Factory.newFeatureMap();
-			
+
 			//get the jape transducer that was built
 			transducerparam.put("grammarURL", getClass().getResource("/jape/main.jape"));
-			ProcessingResource pr1=(ProcessingResource) Factory.createResource("gate.creole.annotdelete.AnnotationDeletePR", params);
-			ProcessingResource pr2=(ProcessingResource) Factory.createResource("gate.creole.tokeniser.DefaultTokeniser", params);
-			
-			
-			//Assign any gazetteers here
-			//FeatureMap gazparam=Factory.newFeatureMap();
-			//gazparam.put("listsURL", getClass().getResource("/plugins/gaz/xyz.def"));
-			//ProcessingResource pr3=(ProcessingResource) Factory.createResource("gate.creole.gazetteer.DefaultGazetteer", gazparam);
-			
-			
-			
-			ProcessingResource pr4=(ProcessingResource) Factory.createResource("gate.creole.splitter.SentenceSplitter", params);
 			ProcessingResource pr5=(ProcessingResource) Factory.createResource("gate.creole.Transducer", transducerparam);
 			/*        ProcessingResource pr1 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpTokenizer", params);
                         ProcessingResource pr2 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpSentenceSplit", params);
@@ -69,12 +49,7 @@ public class GateResources {
                         ProcessingResource pr4 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpPOS", params);
                         ProcessingResource pr5 = (ProcessingResource) Factory.createResource("gate.creole.Transducer",transducerparam);
 			 */
-
-			sac.add(pr1);
-			sac.add(pr2);
-			//sac2.add(pr3);
-			sac2.add(pr4);
-			sac2.add(pr5);
+			sac.add(pr5);
 			Out.prln("Processing resources are loaded");
 		}
 		catch (Exception e) 
@@ -83,14 +58,20 @@ public class GateResources {
 		}
 	}
 	public void setCorpus(Corpus corpus) {
-		sac.setCorpus(corpus);
-		sac2.setCorpus(corpus);                
+		sac.setCorpus(corpus);             
 	}
 	public void execute() throws GateException {
 		Out.prln("Running");
 		sac.execute();
-		sac2.execute();
 	}
+	
+	
+	/**
+	 * Unit test everything here before you push stuff to DAO
+	 * @param a
+	 * @throws MalformedURLException
+	 */
+	
 	public static void main(String a[]) throws MalformedURLException
 	{
 		try {
@@ -101,28 +82,9 @@ public class GateResources {
 			Corpus corpus = (Corpus) Factory
 					.createResource("gate.corpora.CorpusImpl");
 			File[] files = new File(GateResources.class.getResource("/docs/").getPath()).listFiles();
-			//			for (File s : files) {
-			//				//if(s.getName().endsWith(".txt"))
-			//				//{
-			//				URL u = null;
-			//				try {
-			//					u = new URL("file://" + s.get);
-			//					FeatureMap params = Factory.newFeatureMap();
-			//					params.put("sourceUrl", u);
-			//					params.put("preserveOriginalContent", new Boolean(true));
-			//					params.put("collectRepositioningInfo", new Boolean(true));
-			//					Out.prln("Creating doc for " + u);
-			//					Document doc = (Document) Factory.createResource("gate.corpora.DocumentImpl", params);
-			//					corpus.add(doc);
-			//				} catch (MalformedURLException m) {
-			//					System.out.print(u);
-			//					m.printStackTrace();
-			//				}
-			//				//}
-			//			}
 
 			URL u = null;
-			u = GateResources.class.getResource("/docs/Introduction.pdf");
+			u = GateResources.class.getResource("/docs/Gigzolo rehearsal.pdf");
 			FeatureMap params = Factory.newFeatureMap();
 			params.put("sourceUrl", u);
 			params.put("preserveOriginalContent", new Boolean(true));
@@ -149,18 +111,10 @@ public class GateResources {
 				//String txt=
 				AnnotationSet defaultAnnotSet = doc.getAnnotations();
 				Set<String> annotTypesRequired = new HashSet<String>();
-				annotTypesRequired.add("Sentence");
+				annotTypesRequired.add("Email");
 				annotTypesRequired.add("SubjectMail");
-				annotTypesRequired.add("ThreadPart");
-				annotTypesRequired.add("Thread");
-//				annotTypesRequired.add("service");
-//				annotTypesRequired.add("room");
-//				annotTypesRequired.add("clean");
-//				annotTypesRequired.add("location");
-//				annotTypesRequired.add("value");
-
-
-				// annotTypesRequired.add("Location");
+				//annotTypesRequired.add("ThreadPart");
+				//annotTypesRequired.add("Thread");
 				Set<Annotation> peopleAndPlaces = new HashSet<Annotation>(defaultAnnotSet.get(annotTypesRequired));
 				FeatureMap features = doc.getFeatures();
 				String originalContent = (String) features
@@ -176,10 +130,10 @@ public class GateResources {
 				SortedAnnotationList sortedAnnotations = new SortedAnnotationList();
 				while (it.hasNext()) {
 					currAnnot = (Annotation) it.next();
-					Out.prln(currAnnot.getType() +"  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue()));
+					Out.prln("<"+currAnnot.getType() +">:  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue()));
 					FeatureMap fm = currAnnot.getFeatures();
 					for (Map.Entry<Object, Object> e : fm.entrySet()) {
-						Out.prln("Type "+e.getKey()+"  Value " + e.getValue());                                        
+						Out.prln("Type: "+e.getKey()+"  Value: " + e.getValue());                                        
 					}
 					sortedAnnotations.addSortedExclusive(currAnnot);
 				} // while

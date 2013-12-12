@@ -1,6 +1,6 @@
 Phase: GetThreads
-Input: Lookup Token Thread
-Options: control = all
+Input: Token Thread
+Options: control = appelt
 
 Rule: threadMessageIdentify
 (
