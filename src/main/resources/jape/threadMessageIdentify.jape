@@ -1,13 +1,29 @@
 Phase: GetThreads
 Input: Token Thread
-Options: control = appelt
+Options: control = all
+
+Macro: QUOTED_TEXT_HIDDEN
+(
+	{Token.string == "["}
+	{Token.string == "Quoted"}
+	{Token.string == "text"}
+	{Token.string == "hidden"}
+	{Token.string == "]"}
+)
 
 Rule: threadMessageIdentify
 (
 	(
 		{Thread}
 		(
-			({Token, !Thread.category == "Thread Header"})+
+			(
+				({Token, !Thread.category == "Thread Header"})
+				//{}
+				//(({Token})+)
+				
+				
+			
+			)+
 		):threadbody
 		
 	):thread

@@ -16,6 +16,7 @@ public class GateResources {
 
 	//Creating a singleton
 	protected GateResources() throws GateException{
+		Out.prln(getClass().getResource("/").getPath());
 		Gate.setGateHome(new File(getClass().getResource("/").getPath()));
 		File gateHome = Gate.getGateHome();
 		File pluginsHome = new File(gateHome,"plugins");
@@ -75,13 +76,13 @@ public class GateResources {
 	public static void main(String a[]) throws MalformedURLException
 	{
 		try {
-			File gateHome = Gate.getGateHome();
+			//File gateHome = Gate.getGateHome();
 			GateResources glp = GateResources.getInstance();
 
 			glp.initialize();
 			Corpus corpus = (Corpus) Factory
 					.createResource("gate.corpora.CorpusImpl");
-			File[] files = new File(GateResources.class.getResource("/docs/").getPath()).listFiles();
+			//File[] files = new File(GateResources.class.getResource("/docs/").getPath()).listFiles();
 
 			URL u = null;
 			u = GateResources.class.getResource("/docs/Gigzolo rehearsal.pdf");
@@ -99,10 +100,10 @@ public class GateResources {
 			glp.execute();
 			Iterator iter = corpus.iterator();
 			int count = 0;
-			String startTagPart_1 = "<span GateID=\"";
-			String startTagPart_2 = "\" title=\"";
-			String startTagPart_3 = "\" style=\"color:Red;\">";
-			String endTag = "</span>";
+//			String startTagPart_1 = "<span GateID=\"";
+//			String startTagPart_2 = "\" title=\"";
+//			String startTagPart_3 = "\" style=\"color:Red;\">";
+//			String endTag = "</span>";
 
 			while (iter.hasNext()) {
 				Document doc = (Document) iter.next();
@@ -111,18 +112,18 @@ public class GateResources {
 				//String txt=
 				AnnotationSet defaultAnnotSet = doc.getAnnotations();
 				Set<String> annotTypesRequired = new HashSet<String>();
-				annotTypesRequired.add("Email");
-				annotTypesRequired.add("SubjectMail");
-				//annotTypesRequired.add("ThreadPart");
+				//annotTypesRequired.add("Email");
+//				annotTypesRequired.add("SubjectMail");
+				annotTypesRequired.add("ThreadPart");
 				//annotTypesRequired.add("Thread");
 				Set<Annotation> peopleAndPlaces = new HashSet<Annotation>(defaultAnnotSet.get(annotTypesRequired));
 				FeatureMap features = doc.getFeatures();
-				String originalContent = (String) features
-						.get(GateConstants.ORIGINAL_DOCUMENT_CONTENT_FEATURE_NAME);
-				RepositioningInfo info = (RepositioningInfo) features
-						.get(GateConstants.DOCUMENT_REPOSITIONING_INFO_FEATURE_NAME);
-				++count;
-				File file = new File("ANNIE_" + count + ".HTML");
+//				String originalContent = (String) features
+//						.get(GateConstants.ORIGINAL_DOCUMENT_CONTENT_FEATURE_NAME);
+//				RepositioningInfo info = (RepositioningInfo) features
+//						.get(GateConstants.DOCUMENT_REPOSITIONING_INFO_FEATURE_NAME);
+//				++count;
+				//File file = new File("ANNIE_" + count + ".HTML");
 				//if (originalContent != null && info != null) {
 				Out.prln("OrigContent and reposInfo existing. Generate file...");
 				Iterator it = peopleAndPlaces.iterator();
@@ -130,7 +131,7 @@ public class GateResources {
 				SortedAnnotationList sortedAnnotations = new SortedAnnotationList();
 				while (it.hasNext()) {
 					currAnnot = (Annotation) it.next();
-					Out.prln("<"+currAnnot.getType() +">:  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue()));
+					Out.prln("<"+currAnnot.getType() +">:  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue())+"\n\n");
 					FeatureMap fm = currAnnot.getFeatures();
 					for (Map.Entry<Object, Object> e : fm.entrySet()) {
 						Out.prln("Type: "+e.getKey()+"  Value: " + e.getValue());                                        

@@ -32,7 +32,7 @@ Rule: threadIdentify
 		({Token.kind == symbol, Token.string == ">"})?
 	):sender
 
-	{Date.kind == date}
+	({Date.kind == date}):sentDate
 	{Token.kind == word, Token.string == "at"}
 	{Date.kind == time}
 
@@ -72,4 +72,5 @@ Rule: threadIdentify
 :threadheader.Thread = {rule="Thread", category = "Thread Header"},
 :toEmailAddr.Email = {rule="Thread", category = "To Email"},
 :ccEmailAddr.Email = {rule="Thread", category="CC Email"},
-:fromEmailAddr.Email = {rule="Thread", category="From Email"}
+:fromEmailAddr.Email = {rule="Thread", category="From Email"},
+:sentDate.ThreadPart = {rule="Thread", category="Sent Date"}
