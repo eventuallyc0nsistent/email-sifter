@@ -3,18 +3,38 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.io.StringReader;
+
+
 import gate.*;
 import gate.creole.*;
 import gate.util.*;
 import gate.util.persistence.PersistenceManager;
 import gate.corpora.RepositioningInfo;
+
+import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.DocumentPreprocessor;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+
 public class GateResources {
 
 	private SerialAnalyserController sac= null;
 	private SerialAnalyserController sac2= null;
 	private static GateResources instance = null;
 
-	//Creating a singleton
+	/*
+	 * Creating a singleton : 
+	 * Means only one instance of the class in created
+	 * Hence the access modifier for the constructor is "protected"
+	 */
 	protected GateResources() throws GateException{
 		Out.prln(getClass().getResource("/").getPath());
 		Gate.setGateHome(new File(getClass().getResource("/").getPath()));
@@ -58,6 +78,8 @@ public class GateResources {
 			e.printStackTrace();
 		}
 	}
+	
+
 	public void setCorpus(Corpus corpus) {
 		sac.setCorpus(corpus);             
 	}
