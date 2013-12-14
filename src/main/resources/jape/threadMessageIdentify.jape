@@ -4,17 +4,29 @@ Options: control = appelt
 
 Rule: threadMessageIdentify
 (
+	{Thread.category == "Thread Header"}
 	(
-		{Thread}
-		(
-			({Token, !Thread.category == "Thread Header"})+
-		):threadbody
-		
-	):thread
-	{Thread}
-)
+		({Token, !Thread.rule == "Thread"})+
+	):threadbody
+):thread
 
 -->
 
 :threadbody.ThreadPart = {rule="Thread", category = "Thread Body"},
-:thread.Thread = {rule="Thread", category = "Thread Main"}
+:thread.Thread = {rule="Thread", category = "Thread Main"},
+{
+	Iterator threadbodyAnnItr = ((AnnotationSet)bindings.get("threadbody")).iterator();
+	StringBuffer threadBodyStrBuffer = new StringBuffer();
+	
+	while(threadbodyAnnItr.hasNext()) {
+		Annotation threadbodyAnn = (Annotation)	threadbodyAnnItr.next();
+		Out.prln(threadbodyAnn);
+	    String threadbodyStr = (String)threadbodyAnn.getFeatures().get("string");
+	    threadBodyStrBuffer.append(threadbodyStr);
+	  	threadBodyStrBuffer.append(" ");
+	}
+	
+	Out.prln(threadBodyStrBuffer);
+  	
+  	
+}

@@ -1,5 +1,5 @@
 Phase: GetThreads
-Input: Token Person Date Address
+Input: Token Lookup Person Date Address
 Options: control = appelt
 
 Macro: PERSON_IDENTIFIER
@@ -28,7 +28,7 @@ Rule: threadIdentify
 	(
 		(PERSON_IDENTIFIER)?
 		({Token.kind == symbol, Token.string == "<"})?
-		({Address.kind == email}): fromEmailAddr
+		({Address.kind == email}):fromEmailAddr
 		({Token.kind == symbol, Token.string == ">"})?
 	):sender
 

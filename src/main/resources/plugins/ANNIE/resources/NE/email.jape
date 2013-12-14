@@ -24,13 +24,17 @@ Rule:Emailaddress1
 Priority: 50
 (
  (
+ (
   {Token.kind == word}|
   {Token.kind == number}
  )+
  (
   {Token.string == "_"}
  )?
- ({Token.string == "."})?
+ (
+  {Token.string == "."}
+ )?
+ )+
   ({Token.kind == word}|
    {Token.kind == number}|
    {Token.string == "_"}
