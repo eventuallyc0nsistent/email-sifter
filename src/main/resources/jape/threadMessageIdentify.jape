@@ -13,6 +13,7 @@ Rule: threadMessageIdentify
 -->
 
 :threadbody.ThreadPart = {rule="Thread", category = "Thread Body"},
+<<<<<<< HEAD
 :thread.Thread = {rule="Thread", category = "Thread Main"},
 {
 	Iterator threadbodyAnnItr = ((AnnotationSet)bindings.get("threadbody")).iterator();
@@ -30,3 +31,6 @@ Rule: threadMessageIdentify
   	
   	
 }
+=======
+:thread.Thread = {rule="Thread", category = "Thread Main"}
+>>>>>>> b4f668e9f104e260bc5acae74a224b36c9fe367e
