@@ -10,8 +10,18 @@ Rule: threadMessageIdentify
 	):threadbody
 ):thread
 
-
 -->
 
 :threadbody.ThreadPart = {rule="Thread", category = "Thread Body"},
-:thread.Thread = {rule="Thread", category = "Thread Main"}
+:thread.Thread = {rule="Thread", category = "Thread Main"},
+{
+	Iterator threadbodyAnnItr = ((AnnotationSet)bindings.get("threadbody")).iterator();
+	
+	while(threadbodyAnnItr.hasNext()) {
+		Annotation threadbodyAnn = (Annotation)	threadbodyAnnItr.next();
+	    String threadbodyStr = (String)threadbodyAnn.getFeatures().get("string");
+	  	Out.prln(threadbodyStr);
+	}
+  	
+  	
+}
