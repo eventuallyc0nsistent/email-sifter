@@ -12,6 +12,7 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.models.lexparser.*;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import gate.util.Out;
 
@@ -39,30 +40,38 @@ public class UseStanfordParser {
 	public void setThreadPart(String threadPart)
 	{
 		tp = threadPart;
+		Out.prln(threadPart);
 	}
 	
-	private String getThreadPart()
+	public String getThreadPart()
 	{
 		return tp;
 	}
 	
 	public void parseThreadPart()
 	{
-		String parseSentence = this.getThreadPart();
-		
-		// This option shows loading and using an explicit tokenizer
-	    TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-	    List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
-	    Tree parse = lp.apply(rawWords2);
-
-	    TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-	    GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-	    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-	    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
-	    System.out.println(tdl);
-	    System.out.println();
-
-	    TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
-	    tp.printTree(parse);
+		try
+		{
+			String parseSentence = getThreadPart();
+			
+			// This option shows loading and using an explicit tokenizer
+		    TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
+		    List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
+		    Tree parse = lp.apply(rawWords2);
+	
+		    TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+		    GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+		    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
+		    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+		    System.out.println(tdl);
+		    System.out.println();
+	
+		    TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
+		    tp.printTree(parse);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

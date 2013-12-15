@@ -216,10 +216,13 @@ public class GateResources {
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
 				Out.prln("<Body>: "+tp.getBody()+"\n");
 				thread.addThreadPart(tp);
-				tp = new ThreadPart();
 				
 				stanfordParser.setThreadPart(tp.getBody());
 				stanfordParser.parseThreadPart();
+				
+				tp = new ThreadPart();
+				
+				
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
 				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
