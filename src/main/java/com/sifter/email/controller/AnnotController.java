@@ -6,6 +6,7 @@ import gate.*;
 
 import com.sifter.email.model.*;
 import com.sifter.email.lib.*;
+import com.sifter.email.lib.GateResources.SortedAnnotationList;
 
 public class AnnotController {
 	private EmailThread thread = new EmailThread();
@@ -23,10 +24,18 @@ public class AnnotController {
 		}
 		
 		
+		GateResources.SortedAnnotationList sortedAnnots = new SortedAnnotationList();
+		
 		HashSet<Annotation> threadPartAnnotSet = gr.getAnnotations(AnnotEnum.ThreadPart.name());
+		
+		for(Annotation a: threadPartAnnotSet){
+			sortedAnnots.addSortedExclusive(a);
+		}
+		
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
-		for(Annotation tpAnnot : threadPartAnnotSet){
+		for (int i = sortedAnnots.size()-1; i>=0; --i) {
+			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
 				thread.addThreadPart(tp);
