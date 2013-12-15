@@ -220,8 +220,6 @@ public class GateResources {
 				stanfordParser.setThreadPart(tp.getBody());
 				stanfordParser.parseThreadPart();
 				
-				tp = new ThreadPart();
-				
 				
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){

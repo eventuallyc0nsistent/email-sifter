@@ -40,7 +40,6 @@ public class UseStanfordParser {
 	public void setThreadPart(String threadPart)
 	{
 		tp = threadPart;
-		Out.prln(threadPart);
 	}
 	
 	public String getThreadPart()
@@ -64,8 +63,20 @@ public class UseStanfordParser {
 		    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
 		    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
 		    System.out.println(tdl);
-		    System.out.println();
+		    
+		    for(TypedDependency td : tdl)
+		    {
+		    	System.out.println(td);
+		    	// print relation
+		    	System.out.println(td.reln());
+		    	// print governer word
+		    	System.out.println(td.gov());
+		    	//print dependent word
+		    	System.out.println(td.dep());
+		    }
+		    
 	
+		    // explicit Tree print by Stanford Parser
 		    TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
 		    tp.printTree(parse);
 		}
