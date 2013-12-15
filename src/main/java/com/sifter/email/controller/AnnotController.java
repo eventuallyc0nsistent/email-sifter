@@ -37,7 +37,10 @@ public class AnnotController {
 		for (int i = sortedAnnots.size()-1; i>=0; --i) {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
-				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
+				String body = gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory());
+				body.replaceAll("\\[Quoted  text  hidden\\]", "");
+				body.replaceAll("\\n", " ");
+				tp.setBody(body);
 				thread.addThreadPart(tp);
 				tp = new ThreadPart();
 			}

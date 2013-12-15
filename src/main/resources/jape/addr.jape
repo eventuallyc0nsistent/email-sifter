@@ -1,0 +1,24 @@
+Phase: AddressPhase
+Input: Address
+Options: control = appelt
+
+Rule: Email
+(
+	{Address.kind == email}
+):ea
+-->
+:ea.EmailAddress = {category="EmailAddress"}
+
+Rule: PhoneNum
+(
+	{Address.kind == phone}
+):phoneNum
+-->
+:phoneNum.PhoneNum = {category="PhoneNumber"}
+
+Rule: URL
+(
+	{Address.kind == url}
+):urlAddr
+-->
+:urlAddr.URLAddr = {category="URLAddr"}
