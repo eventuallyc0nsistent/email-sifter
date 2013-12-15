@@ -23,7 +23,6 @@ public class AnnotController {
 			thread.setSubject(gr.getContent(subjAnnot));
 		}
 		
-		
 		GateResources.SortedAnnotationList sortedAnnots = new SortedAnnotationList();
 		
 		HashSet<Annotation> threadPartAnnotSet = gr.getAnnotations(AnnotEnum.ThreadPart.name());
@@ -34,7 +33,7 @@ public class AnnotController {
 		
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
-		for (int i = sortedAnnots.size()-1; i>=0; --i) {
+		for (int i = 0; i < sortedAnnots.size(); ++i) {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				String body = gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory());
@@ -56,5 +55,13 @@ public class AnnotController {
 		}
 		return thread;
 	}
+	
+	
+	private Meta buildMetaInformation(){
+		Meta meta = new Meta();
+		
+		return meta;
+	}
+	
 	
 }

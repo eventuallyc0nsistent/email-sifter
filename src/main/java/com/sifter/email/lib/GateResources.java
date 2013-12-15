@@ -243,7 +243,7 @@ public class GateResources {
 			sortedAnnots.addSortedExclusive(an);
 		}
 		//ThreadPart tp = new ThreadPart();
-		for (int i = sortedAnnots.size()-1; i>=0; --i) {
+		for (int i = 0; i < sortedAnnots.size(); ++i) {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
