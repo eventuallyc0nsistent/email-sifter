@@ -3,9 +3,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-import com.sifter.email.model.EmailThread;
-import com.sifter.email.model.ThreadPart;
-import com.sifter.email.model.UseStanfordParser;
+import com.sifter.email.model.*;
 
 import gate.*;
 import gate.creole.*;
@@ -209,33 +207,65 @@ public class GateResources {
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
 		
-		UseStanfordParser stanfordParser = new UseStanfordParser();
+		StanfordResources stanfordParser = new StanfordResources();
 		
-		for(Annotation tpAnnot : threadPartAnnotSet){
+//		for(Annotation tpAnnot : threadPartAnnotSet){
+//			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
+//				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
+//				Out.prln("<Body>: "+tp.getBody()+"\n");
+//				thread.addThreadPart(tp);
+//				
+//				stanfordParser.setThreadPart(tp.getBody());
+//				stanfordParser.parseThreadPart();
+//				
+//				tp = new ThreadPart();
+//				
+//				
+//			}
+//			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
+//				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
+//				Out.prln("<SenderEmail>: "+tp.getSenderEmail()+"\n");
+//			}
+//			if(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()) != null){
+//				tp.setSentTime(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()));
+//				Out.prln("<SentTime>: "+tp.getSentTime()+"\n");
+//			}
+//			if(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
+//				tp.setSenderName(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()));
+//				Out.prln("<SenderName> "+tp.getSenderName()+"\n");
+//			}
+//			
+//		}
+		
+		SortedAnnotationList sortedAnnots = new SortedAnnotationList();
+		
+		for(Annotation an: threadPartAnnotSet){
+			sortedAnnots.addSortedExclusive(an);
+		}
+		//ThreadPart tp = new ThreadPart();
+		for (int i = sortedAnnots.size()-1; i>=0; --i) {
+			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
-				Out.prln("<Body>: "+tp.getBody()+"\n");
-				thread.addThreadPart(tp);
 				
 				stanfordParser.setThreadPart(tp.getBody());
 				stanfordParser.parseThreadPart();
-				
-				
+
+				thread.addThreadPart(tp);
+				tp = new ThreadPart();
+
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
 				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
-				Out.prln("<SenderEmail>: "+tp.getSenderEmail()+"\n");
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()) != null){
 				tp.setSentTime(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()));
-				Out.prln("<SentTime>: "+tp.getSentTime()+"\n");
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
 				tp.setSenderName(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()));
-				Out.prln("<SenderName> "+tp.getSenderName()+"\n");
 			}
-			
 		}
+		
 		
 		
 		

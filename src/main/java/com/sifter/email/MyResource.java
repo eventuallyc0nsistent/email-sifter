@@ -46,14 +46,8 @@ public class MyResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public EmailThread getGate() throws Exception{
-    	
     	ThreadDao tDao = new ThreadDao();
     	return tDao.getThreadForDoc(getClass().getResource("/docs/Gigzolo rehearsal.pdf"));
-    	
-    	//Gate.init();
-    	//MainFrame.getInstance().setVisible(true);
-    	//Factory.newDocument("This is a new document");
-    	//return "Get Gate";
     }
     
 }

@@ -1,0 +1,42 @@
+Phase: POSTagger
+Input: Token Address
+Options: control = brill
+
+Rule: NPRule
+(
+	(
+		(
+			({Token.category == NN})|
+			({Token.category == NNS})|
+			({Token.category == NNP})|
+			({Token.category == NNPS})
+		)
+		|
+		(
+			({Token.category == JJ})
+		)
+	)*
+	(
+		({Token.category == IN})
+	)?
+	(
+		(
+			({Token.category == NN})|
+			({Token.category == NNS})|
+			({Token.category == NNP})|
+			({Token.category == NNPS})
+		)
+		|
+		(
+			({Token.category == JJ})
+		)
+	)*
+	(
+		({Token.category == NN})|
+		({Token.category == NNS})|
+		({Token.category == NNP})|
+		({Token.category == NNPS})
+	)
+):nounPhrase
+-->
+:nounPhrase.NounPhrase = {}

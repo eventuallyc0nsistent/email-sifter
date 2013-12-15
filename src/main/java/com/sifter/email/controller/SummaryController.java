@@ -7,4 +7,5 @@ public class SummaryController {
 	public HashMap<String,Integer> contentIndexMap = new HashMap<String, Integer>();
 	
 	
+	
 }
