@@ -3,29 +3,15 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.io.StringReader;
-
 import com.sifter.email.model.EmailThread;
 import com.sifter.email.model.ThreadPart;
+import com.sifter.email.model.UseStanfordParser;
 
 import gate.*;
 import gate.creole.*;
 import gate.util.*;
 import gate.util.persistence.PersistenceManager;
 import gate.corpora.RepositioningInfo;
-
-import edu.stanford.nlp.process.TokenizerFactory;
-import edu.stanford.nlp.process.CoreLabelTokenFactory;
-import edu.stanford.nlp.process.DocumentPreprocessor;
-import edu.stanford.nlp.process.PTBTokenizer;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Sentence;
-import edu.stanford.nlp.trees.*;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
-
 
 /**
  * Class to get all data from the document using GATE modules. 
@@ -222,12 +208,18 @@ public class GateResources {
 		HashSet<Annotation> threadPartAnnotSet = gr.getAnnotations("ThreadPart");
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
+		
+		UseStanfordParser stanfordParser = new UseStanfordParser();
+		
 		for(Annotation tpAnnot : threadPartAnnotSet){
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
 				Out.prln("<Body>: "+tp.getBody()+"\n");
 				thread.addThreadPart(tp);
 				tp = new ThreadPart();
+				
+				stanfordParser.setThreadPart(tp.getBody());
+				stanfordParser.parseThreadPart();
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
 				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
@@ -241,7 +233,7 @@ public class GateResources {
 				tp.setSenderName(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()));
 				Out.prln("<SenderName> "+tp.getSenderName()+"\n");
 			}
-			Thread.sleep(2000);
+			
 		}
 		
 		
