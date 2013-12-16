@@ -1,21 +1,19 @@
 package com.sifter.email.lib;
 import com.sifter.email.model.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.io.StringReader;
 
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.util.ArrayCoreMap;
 import edu.stanford.nlp.models.lexparser.*;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.process.*;
 import gate.util.Out;
 
 /*
@@ -37,6 +35,7 @@ public class StanfordResources {
 		lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
 		tlp = new PennTreebankLanguagePack();
 		gsf  = tlp.grammaticalStructureFactory();
+		
 	}
 	
 	public void setThreadPart(String threadPart)
@@ -52,19 +51,54 @@ public class StanfordResources {
 	
 	
 	public ArrayList<String> getPhrases(String text, String pos){
+		
 		ArrayList<String> phrases = new ArrayList<String>();
+		
 		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
 	    List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
-	    Tree currTree = lp.apply(rawWords);
-		ArrayList<Tree> treeList = new ArrayList<Tree>();
-		getPhrases(treeList, currTree,pos);
-		
-		for(Tree t : treeList){
-			Out.prln(t.toString());
-			Out.prln();
-		}
-		
-		
+	    
+	    // this is to break all the paragraphs to sentences List
+	    Set<String> boundaryToDiscard = new HashSet<String>();
+	    boundaryToDiscard.add(".");
+	    boundaryToDiscard.add("!");
+	    boundaryToDiscard.add("?");
+	    WordToSentenceProcessor wtsp = new WordToSentenceProcessor(boundaryToDiscard);
+	    List<CoreLabel> listSentences = wtsp.process(rawWords);
+
+	    Iterator<CoreLabel> iterator = listSentences.iterator();
+	    
+	    while(iterator.hasNext())
+	    {
+	    	List<CoreLabel> singleSentence = (List<CoreLabel>) iterator.next();
+	    	
+	    	Tree currTree = lp.apply(singleSentence);
+	    	ArrayList<Tree> treeList = new ArrayList<Tree>();
+			
+			getPhrases(treeList, currTree,pos);
+			
+			for(Tree t : treeList){
+				// eliminate Trees with one word 
+				// 3 is number of nodes
+				if(t.size()>3)
+				{
+					TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+				    GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+				    GrammaticalStructure gs = gsf.newGrammaticalStructure(t);
+				    
+				    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+				    for (TypedDependency td : tdl)
+				    {
+				    	Out.println(td);
+				    }
+					 
+				}
+				
+			}
+	    }
+
+	    
+	    
+	    
 		return phrases;
 	}
 	
@@ -94,18 +128,18 @@ public class StanfordResources {
 			String parseSentence = getThreadPart();
 			
 			// This option shows loading and using an explicit tokenizer
-		    TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-		    List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
-		    Tree parse = lp.apply(rawWords2);
+//		    TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
+//		    List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
+//		    Tree parse = lp.apply(rawWords2);
 		    //parse.
-		    TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+//		    TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 		    //GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
 		    //GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
 		    
 		    //List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
-		    System.out.println();
+//		    System.out.println();
 		    //System.out.println(tdl);
-		    System.out.println();
+//		    System.out.println();
 		    
 		    Out.prln("******************NP*****************************");
 		    getPhrases(parseSentence,"NP");

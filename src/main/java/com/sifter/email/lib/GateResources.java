@@ -248,11 +248,13 @@ public class GateResources {
 			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
 				
-				stanfordParser.setThreadPart(tp.getBody());
+				// remove [Quoted  text  hidden]
+				String removedQuotedText = tp.getBody().replace("[Quoted  text  hidden]", "");
+				stanfordParser.setThreadPart(removedQuotedText);
 				stanfordParser.parseThreadPart();
 
 				thread.addThreadPart(tp);
-				tp = new ThreadPart();
+//				tp = new ThreadPart();
 
 			}
 			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
