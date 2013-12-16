@@ -66,6 +66,7 @@ public class SummaryController {
 		Summary summary = new Summary();
 
 		int i = 0;
+		
 		while(phrases.size() <= 8 && i < list.size()){
 			Phrase p = list.get(i++);
 			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
@@ -78,6 +79,7 @@ public class SummaryController {
 		
 		Collections.sort(phrases, new PhrasePositionComparator());
 		ArrayList<String> summSet = new ArrayList<String>();
+		summSet.add("Subject: "+thread.getSubject());
 		for(Phrase p: phrases){
 			summSet.add(p.getPhrase());
 		}

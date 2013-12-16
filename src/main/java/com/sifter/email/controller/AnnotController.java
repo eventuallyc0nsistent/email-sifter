@@ -208,6 +208,8 @@ public class AnnotController {
 			str = str.replaceAll("had'nt", "had not");
 			str = str.replaceAll("Should'nt", "Should not");
 			str = str.replaceAll("should'nt", "should not");
+			str = str.replaceAll("'ve", "have");
+			str = str.replaceAll("'re", "are");
 			str = str.replaceAll("[Ss]ent[ ]+[Ff]rom[ ]+[Mm]y[ ]+.*", "");
 			str = str.replaceAll("[Ss]ent[ ]+[Vv]ia[ ]+B.*", "");
 			str = str.replaceAll("https://mail.google.com[/.?=&\\w\\d]*", "");
@@ -219,7 +221,7 @@ public class AnnotController {
 			str = str.replaceAll("\\[.*\\]", "");
 			str = str.replaceAll("__+.*", "");
 			str = str.replaceAll("-RSB-.*-LSB-.*", "");
-			str = str.replaceAll("\n.*|.*", "");
+			str = str.replaceAll("\n.*\\|.*", "");
 			str = str.replaceAll("\n", " ");
 			return str;
 		}
