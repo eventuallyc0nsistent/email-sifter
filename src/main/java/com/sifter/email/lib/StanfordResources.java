@@ -62,6 +62,7 @@ public class StanfordResources {
 	    boundaryToDiscard.add(".");
 	    boundaryToDiscard.add("!");
 	    boundaryToDiscard.add("?");
+	    
 	    WordToSentenceProcessor wtsp = new WordToSentenceProcessor(boundaryToDiscard);
 	    List<CoreLabel> listSentences = wtsp.process(rawWords);
 
@@ -88,16 +89,13 @@ public class StanfordResources {
 				    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
 				    for (TypedDependency td : tdl)
 				    {
-				    	Out.println(td);
+				    	Out.prln(td);
 				    }
 					 
 				}
 				
 			}
 	    }
-
-	    
-	    
 	    
 		return phrases;
 	}
