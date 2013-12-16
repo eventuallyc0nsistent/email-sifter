@@ -140,7 +140,13 @@ public class AnnotController {
 		}
 		return list;
 	}
-	
+	/**
+	 * B
+	 * @param annot
+	 * @param kind
+	 * @return
+	 * @throws Exception
+	 */
 	private HashSet<String> buildAnnotsFromKind(String annot, String kind) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
 		HashSet<String> list = new HashSet<String>();
@@ -154,11 +160,14 @@ public class AnnotController {
 		return list;
 	}
 	
+	/**
+	 * Cleans the string 
+	 * @param str
+	 * @return
+	 */
 	private String cleanString(String str){
 		if(str != null){
-			//str = str.replaceAll("\\[?[ ]*Quoted[ ]*text[ ]*hidden.*", "");
-			str = str.replaceAll("\\[Quoted  text  hidden\\]","");
-			//str = str.replaceAll("\n", " ");
+			str = str.replaceAll("Quoted.*","");
 			str = str.replaceAll("'d", " would");
 			str = str.replaceAll("'m", " am");
 			str = str.replaceAll("'ll", " will");
@@ -171,8 +180,14 @@ public class AnnotController {
 			str = str.replaceAll("Should'nt", "Should not");
 			str = str.replaceAll("should'nt", "should not");
 			str = str.replaceAll("[Ss]ent[ ]+[Ff]rom[ ]+[Mm]y[ ]+.*", "");
+			str = str.replaceAll("[Ss]ent[ ]+[Vv]ia[ ]+B.*", "");
 			str = str.replaceAll("https://mail.google.com[/.?=&\\w\\d]*", "");
 			str = str.replaceAll("[\\d]*[\\d]/[\\d]*[\\d]/[\\d]*[\\d][ ]*Gmail.*", "");
+			str = str.replaceAll("\\\\n[A-Z][a-zA-Z0-9]*[ ]*([A-Z][a-zA-Z0-9]*)?[ ]*.*\\\\n.*", "");
+			str = str.replaceAll("[\\w]+[ ]+[\\d]+[ ]*,[ ]*[\\d]+[ ]*at[ ]*[\\d]+[ ]*:[ ]*[\\d]+[ ]*[\\w]*", "");
+			str = str.replaceAll("NOTICE.*", "");
+			str = str.replaceAll("<.*>.*", "");
+			str = str.replaceAll("\n", " ");
 			return str;
 		}
 		else

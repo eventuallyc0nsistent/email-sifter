@@ -1,6 +1,8 @@
 package com.sifter.email.controller;
 import gate.util.Out;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,7 +57,7 @@ public class SummaryController {
 //			}
 //		}
 		int i = 0;
-		while(phrases.size() <= 6 && i < list.size()){
+		while(phrases.size() <= 8 && i < list.size()){
 			Phrase p = list.get(i++);
 			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
 				if(!isRepeated(phrases,p)){
@@ -80,7 +82,7 @@ public class SummaryController {
 	class  PhraseScoreComparator implements Comparator<Phrase>{
 		@Override
 		public int compare(Phrase p1, Phrase p2) {
-			return p2.getScore() - p1.getScore() == 0? p1.getPhrase().length() - p2.getPhrase().length():p2.getScore() - p1.getScore();
+			return p2.getScore() - p1.getScore() == 0? p2.getPhrase().length() - p1.getPhrase().length():p2.getScore() - p1.getScore();
 		}
 	}
 	
@@ -94,12 +96,67 @@ public class SummaryController {
 	
 	public static void main(String[] args) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/testset/test/Cake.pdf"));
-		ArrayList<Phrase> list = new ArrayList<Phrase>();
-		list = aCtrl.getPhrases();
-		SummaryController sCtrl = new SummaryController();
-		sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
-		Out.prln(sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1));
+		
+		while(true){
+			String path = "";
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println();
+	        System.out.println("Enter 1 for practice set and 2 for test set and 0 to exit:");
+	        try{
+	            int i = Integer.parseInt(br.readLine());
+	            if(i == 2){
+	            	path = "testset/test/";
+	            }
+	            else if(i == 0){
+	            	break;
+	            }
+	            
+	            System.out.println("Enter name of document: ");
+	            path = path+br.readLine();
+	        }catch(NumberFormatException nfe){
+	            System.err.println("Invalid Format!");
+	        }
+			
+			
+			
+			EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
+			ArrayList<Phrase> list = new ArrayList<Phrase>();
+			list = aCtrl.getPhrases();
+			SummaryController sCtrl = new SummaryController();
+			Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
+			
+			System.out.println("All the people involved in the chain: \n");
+			for(String s:summary.getMeta().getPeopleList()){
+				System.out.println("\t"+s);
+			}
+			System.out.println();
+			System.out.println("All the URLs mentioned in the chain: \n");
+			for(String s:summary.getMeta().getUrlList()){
+				System.out.println("\t"+s);
+			}
+			System.out.println();
+			System.out.println("All the email addresses in the chain: \n");
+			for(String s:summary.getMeta().getEmailList()){
+				System.out.println("\t"+s);
+			}
+			System.out.println();
+			System.out.println("All the times and dates mentioned in the chain: \n");
+			for(String s:summary.getMeta().getDateTimeList()){
+				System.out.println("\t"+s);
+			}
+			System.out.println();
+			System.out.println();
+			
+			System.out.println("Summary phrases: \n");
+			for(String s:summary.getSummary()){
+				System.out.println("\t*\t"+s);
+			}
+			System.out.println();
+		}
+		
+		
+		
 	}
 	
 }

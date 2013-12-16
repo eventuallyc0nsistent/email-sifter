@@ -77,8 +77,8 @@ public class StanfordResources {
 
 
 	public void buildPhrases(ArrayList<String> phrases, String text){
-		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
+//		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
+//		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
 
 		for(Tree sentence: getSentenceTrees(text)){
 			ArrayList<Tree> treeList = new ArrayList<Tree>();

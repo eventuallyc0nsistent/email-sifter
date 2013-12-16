@@ -64,7 +64,7 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Summary getSummary(@PathParam("path") String path) throws Exception{
     	ThreadDao tDao = new ThreadDao();
-    	return tDao.getSummaryForDoc(getClass().getResource("/docs/"+path));
+    	return tDao.getSummaryForDoc(getClass().getResource("/docs/testset/test/"+path));
     }
     
     @Path("getallsummary")
@@ -72,7 +72,7 @@ public class MyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<Summary> getAllSummary() throws Exception{
     	ArrayList<Summary> summaries = new ArrayList<Summary>();
-    	File dir = new File(getClass().getResource("/docs/").toURI());
+    	File dir = new File(getClass().getResource("/docs/testset/test/").toURI());
     	ThreadDao tDao = new ThreadDao();
     	for(File f:dir.listFiles()){
     		summaries.add(tDao.getSummaryForDoc(f.toURI().toURL()));
