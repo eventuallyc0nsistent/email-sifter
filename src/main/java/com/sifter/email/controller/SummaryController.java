@@ -1,4 +1,6 @@
 package com.sifter.email.controller;
+import gate.util.Out;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -92,11 +94,12 @@ public class SummaryController {
 	
 	public static void main(String[] args) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/Gigzolorehearsal.pdf"));
+		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/testset/test/Cake.pdf"));
 		ArrayList<Phrase> list = new ArrayList<Phrase>();
 		list = aCtrl.getPhrases();
 		SummaryController sCtrl = new SummaryController();
 		sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
+		Out.prln(sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1));
 	}
 	
 }
