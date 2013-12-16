@@ -156,8 +156,9 @@ public class AnnotController {
 	
 	private String cleanString(String str){
 		if(str != null){
-			str = str.replaceAll("\\[?[ ]*Quoted[ ]*text[ ]*hidden.*", "");
-			str = str.replaceAll("\n", " ");
+			//str = str.replaceAll("\\[?[ ]*Quoted[ ]*text[ ]*hidden.*", "");
+			str = str.replaceAll("\\[Quoted  text  hidden\\]","");
+			//str = str.replaceAll("\n", " ");
 			str = str.replaceAll("'d", " would");
 			str = str.replaceAll("'m", " am");
 			str = str.replaceAll("'ll", " will");

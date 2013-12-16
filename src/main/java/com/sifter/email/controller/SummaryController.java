@@ -15,10 +15,10 @@ public class SummaryController {
 		
 		for(Phrase p:list){
 			int score = sr.getNamedEntityScore(p.getPhrase()); 
-			if(p.getPosition() == 0){
-				score += 5;
-			}
-			else if(p.getPosition() <= total/2){
+//			if(p.getPosition() == 0){
+//				score += 5;
+//			}
+			if(p.getPosition() <= total/2){
 				score += (total/2) - p.getPosition();
 			}
 			else{
@@ -92,7 +92,7 @@ public class SummaryController {
 	
 	public static void main(String[] args) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/Gigzolo rehearsal.pdf"));
+		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/Gigzolorehearsal.pdf"));
 		ArrayList<Phrase> list = new ArrayList<Phrase>();
 		list = aCtrl.getPhrases();
 		SummaryController sCtrl = new SummaryController();
