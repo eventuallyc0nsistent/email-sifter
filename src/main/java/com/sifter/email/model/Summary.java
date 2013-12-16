@@ -19,6 +19,4 @@ public class Summary {
 	public void setSummary(HashSet<String> summary) {
 		this.summary = summary;
 	}
-	
-	
 }

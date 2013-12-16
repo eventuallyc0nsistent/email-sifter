@@ -45,9 +45,16 @@ public class MyResource {
     @Path("getthread")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public EmailThread getGate() throws Exception{
+    public EmailThread getThread() throws Exception{
     	ThreadDao tDao = new ThreadDao();
     	return tDao.getThreadForDoc(getClass().getResource("/docs/Gigzolo rehearsal.pdf"));
+    }
+    @Path("getsummary")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Summary getSummary() throws Exception{
+    	ThreadDao tDao = new ThreadDao();
+    	return tDao.getSummaryForDoc(getClass().getResource("/docs/Gigzolo rehearsal.pdf"));
     }
     
 }

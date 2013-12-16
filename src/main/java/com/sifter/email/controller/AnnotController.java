@@ -83,6 +83,36 @@ public class AnnotController {
 	}
 	
 	
+	
+	public ArrayList<Phrase> getPhrases(){
+		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
+		
+		StanfordResources sr = StanfordResources.getInstance();
+		int i = 0;
+		
+		ArrayList<String> strPhrases = new ArrayList<String>();
+		sr.buildPhrases(strPhrases,thread.getSubject());
+		buildPhraseList(phrases,strPhrases,i);
+		
+		for(ThreadPart tp: thread.getThreadParts()){
+			strPhrases = new ArrayList<String>();
+			sr.buildPhrases(strPhrases,tp.getBody());
+			buildPhraseList(phrases,strPhrases,i);
+		}
+		
+		return phrases;
+	}
+	
+	public void buildPhraseList(ArrayList<Phrase> phrases, ArrayList<String> strPhrases, int pos){
+		for(String s:strPhrases){
+			Phrase p = new Phrase();
+			p.setPhrase(s);
+			p.setPosition(pos);
+			p.setScore(0);
+			phrases.add(p);
+		}
+	}
+	
 	private HashSet<String> buildAnnots(String annot) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
 		HashSet<String> list = new HashSet<String>();
@@ -143,4 +173,5 @@ public class AnnotController {
 			return null;
 		
 	}
+	
 }
