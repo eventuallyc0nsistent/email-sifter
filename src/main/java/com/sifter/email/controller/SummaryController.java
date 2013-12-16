@@ -13,15 +13,17 @@ import com.sifter.email.lib.StanfordResources;
 import com.sifter.email.model.*;
 public class SummaryController {
 	
-	
+	/**
+	 * Builds index based on NER and spatial properties of the phrase
+	 * @param list
+	 * @param total
+	 */
 	private void buildIndex(ArrayList<Phrase> list, int total){
 		StanfordResources sr = StanfordResources.getInstance();
 		
 		for(Phrase p:list){
 			int score = sr.getNamedEntityScore(p.getPhrase()); 
-//			if(p.getPosition() == 0){
-//				score += 5;
-//			}
+
 			if(p.getPosition() <= total/2){
 				score += (total/2) - p.getPosition();
 			}
@@ -32,7 +34,12 @@ public class SummaryController {
 		}
 	
 	}
-	
+	/**
+	 * Checks if the phrase has been repeated
+	 * @param phrases
+	 * @param phrase
+	 * @return
+	 */
 	private boolean isRepeated(ArrayList<Phrase> phrases, Phrase phrase){
 		for(Phrase p:phrases){
 			if(p.getPhrase().contains(phrase.getPhrase()) || phrase.getPhrase().contains(p.getPhrase())){
@@ -44,18 +51,20 @@ public class SummaryController {
 		return false;
 	}
 	
-	
+	/**
+	 * Builds the summary model
+	 * @param thread
+	 * @param list
+	 * @param total
+	 * @return
+	 */
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
 		buildIndex(list,total);
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
 		HashSet<Integer> addedMessagePos = new HashSet<Integer>();
 		Collections.sort(list,new PhraseScoreComparator());
 		Summary summary = new Summary();
-//		for(int i = 0; i < 6; ++i){
-//			if(i<list.size()){
-//				phrases.add(list.get(i));
-//			}
-//		}
+
 		int i = 0;
 		while(phrases.size() <= 8 && i < list.size()){
 			Phrase p = list.get(i++);
@@ -78,7 +87,11 @@ public class SummaryController {
 	}
 	
 	
-	
+	/**
+	 * Compares in decreasing order of score
+	 * @author svalmiki
+	 *
+	 */
 	class  PhraseScoreComparator implements Comparator<Phrase>{
 		@Override
 		public int compare(Phrase p1, Phrase p2) {

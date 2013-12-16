@@ -46,14 +46,11 @@ public class StanfordResources {
 	
 	// This option shows loading and sentence-segmenting and tokenizing
 	// a file using DocumentPreprocessor.
-
-
 	protected StanfordResources()
 	{
 		Properties props = new Properties();
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
 		pipeline = new StanfordCoreNLP(props);
-		lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
 	}
 	
 	public static StanfordResources getInstance(){
@@ -75,10 +72,12 @@ public class StanfordResources {
 		return tp;
 	}
 
-
+	/**
+	 * Builds phrase string from re-engineered phrase trees
+	 * @param phrases
+	 * @param text
+	 */
 	public void buildPhrases(ArrayList<String> phrases, String text){
-//		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-//		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
 
 		for(Tree sentence: getSentenceTrees(text)){
 			ArrayList<Tree> treeList = new ArrayList<Tree>();
@@ -110,21 +109,16 @@ public class StanfordResources {
 	}
 
 
-
-
+	
+	/**
+	 * gets phrases based on POS tagged tree parsing by recursion.
+	 */
 	private void getPhrases(ArrayList<Tree> treeList, Tree currTree){
 		if(currTree == null){
 			return;
 		}
 		for(Tree t:currTree.getChildrenAsList()){
 
-//			if(t.label().toString().equals("VB") || t.label().toString().equals("PRP")) {
-//				treeList.add(t);
-//			}
-//			else if(t.label().toString().equals("NNP") && Character.isUpperCase(t.toString().split(" ")[1].charAt(0))) {
-//				treeList.add(t);
-//			}
-//			else 
 			if(t.label().toString().equals("NP") &&  t.size()>5 && t.size()<32){
 				treeList.add(t);
 			}
@@ -135,7 +129,11 @@ public class StanfordResources {
 		}
 	}
 
-
+	/**
+	 * Breaks paragraph into sentence trees
+	 * @param text
+	 * @return
+	 */
 	private ArrayList<Tree> getSentenceTrees(String text){
 		// create an empty Annotation just with the given text
 		Annotation document = new Annotation(text);
@@ -155,7 +153,11 @@ public class StanfordResources {
 
 	}
 
-	
+	/**
+	 * Gets the score based on NER
+	 * @param text
+	 * @return
+	 */
 	
 	public int getNamedEntityScore(String text){
 		Annotation document = new Annotation(text);
@@ -198,8 +200,10 @@ public class StanfordResources {
 		return score;
 	}
 	
-
-
+	/**
+	 * Test method
+	 * 
+	*/
 	public void parseThreadPart()
 	{
 		try

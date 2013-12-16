@@ -9,7 +9,6 @@ import gate.*;
 import gate.creole.*;
 import gate.util.*;
 import gate.util.persistence.PersistenceManager;
-import gate.corpora.RepositioningInfo;
 
 /**
  * Class to get all data from the document using GATE modules. 
@@ -84,7 +83,11 @@ public class GateResources {
 		Out.prln("Executed.");
 	}
 	
-	
+	/**
+	 * Builds corpus with URL
+	 * @param u
+	 * @throws ResourceInstantiationException
+	 */
 	public void buildCorpusWithDoc(URL u) throws ResourceInstantiationException{
 		corpus = (Corpus) Factory.createResource("gate.corpora.CorpusImpl");
 		corpus.clear();
@@ -98,7 +101,12 @@ public class GateResources {
 		setCorpus();
 	}
 	
-	
+	/**
+	 * Builds corpus with file
+	 * @param file
+	 * @throws ResourceInstantiationException
+	 * @throws MalformedURLException
+	 */
 	public void buildCorpusWithDoc(File file) throws ResourceInstantiationException, MalformedURLException{
 		corpus = (Corpus) Factory.createResource("gate.corpora.CorpusImpl");
 		corpus.clear();
@@ -142,32 +150,40 @@ public class GateResources {
 		else
 			return null;
 	}
-	
+	/**
+	 * Gets string from annotation
+	 * @param annot
+	 * @param cat
+	 * @return
+	 * @throws Exception
+	 */
 	public String getContentFromCategory(Annotation annot, String cat) throws Exception{	
 		if(annot.getFeatures().get(Constants.CATEGORY).equals(cat)){
-			//return (String)annot.getFeatures().get(Constants.STRING);
 			return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
 		}
 		
-//		for(Map.Entry<Object,Object> f : annot.getFeatures().entrySet()){
-//			if(f.getKey().equals("category")){
-//				if(f.getValue().equals(cat)){
-//					corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue());
-//				}
-//			}
-//		}
 		return null;
 	}
 	
-	
+	/**
+	 * Gets string from annotation
+	 * @param annot
+	 * @return
+	 * @throws Exception
+	 */
 	public String getContentFromAnnot(Annotation annot) throws Exception{	
 		//return (String)annot.getFeatures().get(Constants.STRING);
 		return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
 	}
-	
+	/**
+	 * Gets string from annotation
+	 * @param annot
+	 * @param kind
+	 * @return
+	 * @throws InvalidOffsetException
+	 */
 	public String getContentFromKind(Annotation annot, String kind) throws InvalidOffsetException{
 		if(annot.getFeatures().get(Constants.KIND).equals(kind)){
-			//return (String)annot.getFeatures().get(Constants.STRING);
 			return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
 		}
 		return null;
@@ -186,8 +202,6 @@ public class GateResources {
 	
 	public static void main(String a[]) throws Exception
 	{
-		
-		
 		com.sifter.email.model.EmailThread thread = new EmailThread();
 		GateResources gr = GateResources.getInstance();
 		gr.initialize();
@@ -208,34 +222,6 @@ public class GateResources {
 		
 		StanfordResources stanfordParser = StanfordResources.getInstance();
 		
-//		for(Annotation tpAnnot : threadPartAnnotSet){
-//			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
-//				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
-//				Out.prln("<Body>: "+tp.getBody()+"\n");
-//				thread.addThreadPart(tp);
-//				
-//				stanfordParser.setThreadPart(tp.getBody());
-//				stanfordParser.parseThreadPart();
-//				
-//				tp = new ThreadPart();
-//				
-//				
-//			}
-//			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
-//				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
-//				Out.prln("<SenderEmail>: "+tp.getSenderEmail()+"\n");
-//			}
-//			if(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()) != null){
-//				tp.setSentTime(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()));
-//				Out.prln("<SentTime>: "+tp.getSentTime()+"\n");
-//			}
-//			if(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
-//				tp.setSenderName(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()));
-//				Out.prln("<SenderName> "+tp.getSenderName()+"\n");
-//			}
-//			
-//		}
-		
 		SortedAnnotationList sortedAnnots = new SortedAnnotationList();
 		
 		for(Annotation an: threadPartAnnotSet){
@@ -253,7 +239,6 @@ public class GateResources {
 				stanfordParser.parseThreadPart();
 
 				thread.addThreadPart(tp);
-//				tp = new ThreadPart();
 
 			}
 			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
@@ -267,94 +252,6 @@ public class GateResources {
 			}
 		}
 		
-		
-		
-		
-		
-		
-		
-//		try {
-//			//File gateHome = Gate.getGateHome();
-//			GateResources glp = GateResources.getInstance();
-//
-//			glp.initialize();
-//			Corpus corpus = (Corpus) Factory
-//					.createResource("gate.corpora.CorpusImpl");
-//			//File[] files = new File(GateResources.class.getResource("/docs/").getPath()).listFiles();
-//
-//			URL u = null;
-//			u = GateResources.class.getResource("/docs/Gigzolo rehearsal.pdf");
-//			FeatureMap params = Factory.newFeatureMap();
-//			params.put("sourceUrl", u);
-//			params.put("preserveOriginalContent", new Boolean(true));
-//			params.put("collectRepositioningInfo", new Boolean(true));
-//			Out.prln("Creating doc for " + u);
-//			Document temp = (Document) Factory.createResource("gate.corpora.DocumentImpl", params);
-//			corpus.add(temp);
-//
-//
-//
-//			glp.setCorpus();
-//			glp.execute();
-//			Iterator iter = corpus.iterator();
-//			int count = 0;
-////			String startTagPart_1 = "<span GateID=\"";
-////			String startTagPart_2 = "\" title=\"";
-////			String startTagPart_3 = "\" style=\"color:Red;\">";
-////			String endTag = "</span>";
-//
-//			while (iter.hasNext()) {
-//				Document doc = (Document) iter.next();
-//				DocumentContent dc=doc.getContent();
-//
-//				//String txt=
-//				AnnotationSet defaultAnnotSet = doc.getAnnotations();
-//				Set<String> annotTypesRequired = new HashSet<String>();
-//				//annotTypesRequired.add("Email");
-////				annotTypesRequired.add("SubjectMail");
-//				annotTypesRequired.add("ThreadPart");
-//				//annotTypesRequired.add("Thread");
-//				Set<Annotation> peopleAndPlaces = new HashSet<Annotation>(defaultAnnotSet.get(annotTypesRequired));
-//				
-//				FeatureMap features = doc.getFeatures();
-////				String originalContent = (String) features
-////						.get(GateConstants.ORIGINAL_DOCUMENT_CONTENT_FEATURE_NAME);
-////				RepositioningInfo info = (RepositioningInfo) features
-////						.get(GateConstants.DOCUMENT_REPOSITIONING_INFO_FEATURE_NAME);
-////				++count;
-//				//File file = new File("ANNIE_" + count + ".HTML");
-//				//if (originalContent != null && info != null) {
-//				Out.prln("OrigContent and reposInfo existing. Generate file...");
-//				Iterator it = peopleAndPlaces.iterator();
-//				Annotation currAnnot;
-//				SortedAnnotationList sortedAnnotations = new SortedAnnotationList();
-//				while (it.hasNext()) {
-//					currAnnot = (Annotation) it.next();
-//					Out.prln("<"+currAnnot.getType() +">:  "+dc.getContent(currAnnot.getStartNode().getOffset().longValue(),currAnnot.getEndNode().getOffset().longValue())+"\n\n");
-//					FeatureMap fm = currAnnot.getFeatures();
-//					for (Map.Entry<Object, Object> e : fm.entrySet()) {
-//						Out.prln("Type: "+e.getKey()+"  Value: " + e.getValue());                                        
-//					}
-//					sortedAnnotations.addSortedExclusive(currAnnot);
-//				} // while
-//				String xmlDocument = doc.toXml(peopleAndPlaces, false);
-//				//System.out.println(xmlDocument);
-//				String fileName = new String("GATE" + count + ".HTML");
-//				FileWriter writer = new FileWriter(fileName);
-//				writer.write(xmlDocument);
-//				writer.close();
-//
-//				// do something useful with the XML here!
-//				// Out.prln("'"+xmlDocument+"'");
-//			} // for each doc
-//		} catch (GateException e) {
-//			e.printStackTrace();
-//		} catch (MalformedURLException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	
 	/**

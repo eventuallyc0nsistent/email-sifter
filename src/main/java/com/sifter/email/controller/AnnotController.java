@@ -16,6 +16,12 @@ public class AnnotController {
 		gr = GateResources.getInstance();
 		gr.initialize();
 	}
+	/**
+	 * Builds Thread
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
 	public EmailThread buildThread(URL url) throws Exception{
 		 
 		gr.buildCorpusWithDoc(url);
@@ -68,7 +74,11 @@ public class AnnotController {
 		return thread;
 	}
 	
-	
+	/**
+	 * Gets all the emails URLs, Names, etc.
+	 * @return
+	 * @throws Exception
+	 */
 	private Meta buildMetaInformation() throws Exception{
 		Meta meta = new Meta();
 		//Emails
@@ -83,7 +93,10 @@ public class AnnotController {
 		return meta;
 	}
 	
-	
+	/**
+	 * Gets phrases as Phrase list
+	 * @return
+	 */
 	
 	public ArrayList<Phrase> getPhrases(){
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
@@ -104,7 +117,12 @@ public class AnnotController {
 		
 		return phrases;
 	}
-	
+	/**
+	 * B
+	 * @param phrases
+	 * @param strPhrases
+	 * @param pos
+	 */
 	public void buildPhraseList(ArrayList<Phrase> phrases, ArrayList<String> strPhrases, int pos){
 		for(String s:strPhrases){
 			Phrase p = new Phrase();
@@ -114,7 +132,12 @@ public class AnnotController {
 			phrases.add(p);
 		}
 	}
-	
+	/**
+	 * gets all annotation string for an annotation
+	 * @param annot
+	 * @return
+	 * @throws Exception
+	 */
 	private HashSet<String> buildAnnots(String annot) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
 		HashSet<String> list = new HashSet<String>();
@@ -127,7 +150,13 @@ public class AnnotController {
 		}
 		return list;
 	}
-	
+	/**
+	 * Builds annotations with category
+	 * @param annot
+	 * @param cat
+	 * @return
+	 * @throws Exception
+	 */
 	private HashSet<String> buildAnnotsFromCat(String annot, String cat) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
 		HashSet<String> list = new HashSet<String>();
@@ -187,6 +216,10 @@ public class AnnotController {
 			str = str.replaceAll("[\\w]+[ ]+[\\d]+[ ]*,[ ]*[\\d]+[ ]*at[ ]*[\\d]+[ ]*:[ ]*[\\d]+[ ]*[\\w]*", "");
 			str = str.replaceAll("NOTICE.*", "");
 			str = str.replaceAll("<.*>.*", "");
+			str = str.replaceAll("\\[.*\\]", "");
+			str = str.replaceAll("__+.*", "");
+			str = str.replaceAll("-RSB-.*-LSB-.*", "");
+			str = str.replaceAll("\n.*|.*", "");
 			str = str.replaceAll("\n", " ");
 			return str;
 		}
