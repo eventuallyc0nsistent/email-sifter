@@ -41,26 +41,19 @@ public class StanfordResources {
 
 	private static StanfordResources instance = null;
 	private StanfordCoreNLP pipeline;
-	private StanfordCoreNLP nerPipeline;
 	private LexicalizedParser lp = null;
 	private String tp;
 	
 	// This option shows loading and sentence-segmenting and tokenizing
 	// a file using DocumentPreprocessor.
-	private TreebankLanguagePack tlp;
-	private GrammaticalStructureFactory gsf;
+
 
 	protected StanfordResources()
 	{
 		Properties props = new Properties();
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
 		pipeline = new StanfordCoreNLP(props);
-//		Properties nerProps = new Properties();
-//		nerProps.put("annotators", "tokenize,ssplit,pos, ner");
-//		nerPipeline = new StanfordCoreNLP(nerProps);
 		lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-		tlp = new PennTreebankLanguagePack();
-		gsf  = tlp.grammaticalStructureFactory();
 	}
 	
 	public static StanfordResources getInstance(){
@@ -86,7 +79,6 @@ public class StanfordResources {
 	public void buildPhrases(ArrayList<String> phrases, String text){
 		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
 		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
-		Tree currTree = lp.apply(rawWords);
 
 		for(Tree sentence: getSentenceTrees(text)){
 			ArrayList<Tree> treeList = new ArrayList<Tree>();
@@ -101,7 +93,6 @@ public class StanfordResources {
 				List<TreeGraphNode> graphNodes = new ArrayList<TreeGraphNode>(gs.getNodes());
 				Collections.sort(graphNodes, new TreeGraphComparator());
 				for(TreeGraphNode tgn: graphNodes){
-					//System.out.println(tgn.label().word());
 					String word = tgn.label().word();
 
 					if(word != null){
@@ -114,8 +105,6 @@ public class StanfordResources {
 					}
 				}
 				phrases.add(sb.toString());
-//				Out.prln(sb);
-//				Out.prln();
 			}
 		}
 	}
@@ -125,7 +114,6 @@ public class StanfordResources {
 
 	private void getPhrases(ArrayList<Tree> treeList, Tree currTree){
 		if(currTree == null){
-			//Out.prln(currTree.size());
 			return;
 		}
 		for(Tree t:currTree.getChildrenAsList()){
@@ -145,25 +133,7 @@ public class StanfordResources {
 			}
 			else getPhrases(treeList,t);
 		}
-//		for(Tree t:currTree.getChildrenAsList()){
-//			getPhrases(treeList,t);
-//		}
 	}
-
-	//	private void getPhrases(ArrayList<Tree> treeList, Tree currTree, String pos){
-	//		if(currTree == null){
-	//			return;
-	//		}
-	//		else if(currTree.label().toString().equals(pos)){
-	//			treeList.add(currTree);
-	//		}
-	//
-	//		else{
-	//			for(Tree t:currTree.getChildrenAsList()){
-	//				getPhrases(treeList,t,pos);
-	//			}
-	//		}
-	//	}
 
 
 	private ArrayList<Tree> getSentenceTrees(String text){
@@ -236,23 +206,6 @@ public class StanfordResources {
 		{
 			String parseSentence = getThreadPart();
 
-			// This option shows loading and using an explicit tokenizer
-			TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-			List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
-			Tree parse = lp.apply(rawWords2);
-			//parse.
-			TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-			GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-			GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-			StringBuilder sb = new StringBuilder();
-			//		    for(TreeGraphNode t: gs.getNodes()){
-			//		    	System.out.println(t.label().word());
-			//		    }
-			//List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
-			//		    System.out.println();
-			//		    System.out.println(tdl);
-			//		    System.out.println();
-
 			Out.prln("******************NP*****************************");
 			ArrayList<String> list = new ArrayList<String>();
 			buildPhrases(list,parseSentence);
@@ -262,14 +215,6 @@ public class StanfordResources {
 			
 			Out.prln("******************/NP*****************************");
 			Out.prln();
-
-//			Out.prln("******************VP*****************************");
-//			getPhrases(parseSentence,"VP");
-//			Out.prln("******************/VP*****************************");
-//			TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
-			//tp.printTree(parse);
-
-			//tp.
 
 		}
 		catch(Exception e)

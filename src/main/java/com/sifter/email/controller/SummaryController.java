@@ -29,17 +29,39 @@ public class SummaryController {
 	
 	}
 	
+//	private boolean removeRepetition(ArrayList<Phrase> phrases, Phrase phrase){
+//		ArrayList<Integer> removeInd = new ArrayList<Integer>();
+//		for(Phrase p:phrases){
+//			if(p.getPhrase().contains(phrase.getPhrase())){
+//				return false;
+//			}
+//			else if(phrase.getPhrase().contains(p.getPhrase())){
+//				removeInd.add(phrases.indexOf(p));
+//			}
+//		}
+//	}
+	
 	
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
 		buildIndex(list,total);
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
+		HashSet<Integer> addedMessagePos = new HashSet<Integer>();
 		Collections.sort(list,new PhraseScoreComparator());
 		Summary summary = new Summary();
-		for(int i = 0; i < 6; ++i){
-			if(i<list.size()){
-				phrases.add(list.get(i));
+//		for(int i = 0; i < 6; ++i){
+//			if(i<list.size()){
+//				phrases.add(list.get(i));
+//			}
+//		}
+		int i = 0;
+		while(phrases.size() <= 6 && i < list.size()){
+			Phrase p = list.get(i++);
+			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
+				phrases.add(p);
+				addedMessagePos.add(p.getPosition());
 			}
 		}
+		
 		Collections.sort(phrases, new PhrasePositionComparator());
 		HashSet<String> summSet = new HashSet<String>();
 		for(Phrase p: phrases){
@@ -68,11 +90,6 @@ public class SummaryController {
 	
 	
 	public static void main(String[] args) throws Exception{
-//		GateResources gr = GateResources.getInstance();
-//		gr.initialize();
-//		gr.buildCorpusWithDoc(GateResources.class.getResource("/docs/Gigzolo rehearsal.pdf"));
-//		gr.execute();
-		
 		AnnotController aCtrl = new AnnotController();
 		EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/Gigzolo rehearsal.pdf"));
 		ArrayList<Phrase> list = new ArrayList<Phrase>();

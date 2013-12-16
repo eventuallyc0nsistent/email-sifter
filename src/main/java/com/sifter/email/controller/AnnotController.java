@@ -95,6 +95,7 @@ public class AnnotController {
 		buildPhraseList(phrases,strPhrases,i);
 		
 		for(ThreadPart tp: thread.getThreadParts()){
+			++i;
 			strPhrases = new ArrayList<String>();
 			sr.buildPhrases(strPhrases,tp.getBody());
 			buildPhraseList(phrases,strPhrases,i);
