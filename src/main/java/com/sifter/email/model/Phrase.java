@@ -2,46 +2,25 @@ package com.sifter.email.model;
 
 public class Phrase {
 	private String phrase;
-	private boolean containsDateTime;
-	private boolean containsURL;
-	private boolean containsAddress;
-	private boolean containsPhone;
-	private int index;
-	public int getIndex() {
-		return index;
+	private int score = 0;
+	private int position = 0;
+	public int getPosition() {
+		return position;
 	}
-	public void setIndex(int index) {
-		this.index = index;
+	public void setPosition(int position) {
+		this.position = position;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
 	}
 	public String getPhrase() {
 		return phrase;
 	}
 	public void setPhrase(String phrase) {
 		this.phrase = phrase;
-	}
-	public boolean isContainsDateTime() {
-		return containsDateTime;
-	}
-	public void setContainsDateTime(boolean containsDateTime) {
-		this.containsDateTime = containsDateTime;
-	}
-	public boolean isContainsURL() {
-		return containsURL;
-	}
-	public void setContainsURL(boolean containsURL) {
-		this.containsURL = containsURL;
-	}
-	public boolean isContainsAddress() {
-		return containsAddress;
-	}
-	public void setContainsAddress(boolean containsAddress) {
-		this.containsAddress = containsAddress;
-	}
-	public boolean isContainsPhone() {
-		return containsPhone;
-	}
-	public void setContainsPhone(boolean containsPhone) {
-		this.containsPhone = containsPhone;
 	}
 	
 	

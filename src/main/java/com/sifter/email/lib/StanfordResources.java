@@ -39,26 +39,31 @@ import gate.util.Out;
 public class StanfordResources {
 
 
-
+	private static StanfordResources instance = null;
 	private StanfordCoreNLP pipeline;
 	private LexicalizedParser lp = null;
 	private String tp;
-
+	
 	// This option shows loading and sentence-segmenting and tokenizing
 	// a file using DocumentPreprocessor.
-	private TreebankLanguagePack tlp;
-	private GrammaticalStructureFactory gsf;
 
-	public StanfordResources()
+
+	protected StanfordResources()
 	{
 		Properties props = new Properties();
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
 		pipeline = new StanfordCoreNLP(props);
 		lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-		tlp = new PennTreebankLanguagePack();
-		gsf  = tlp.grammaticalStructureFactory();
 	}
-
+	
+	public static StanfordResources getInstance(){
+		if(instance ==  null){
+			instance = new StanfordResources();
+		}
+		return instance;
+	}
+	
+	
 	public void setThreadPart(String threadPart)
 	{
 		tp = threadPart;
@@ -71,16 +76,14 @@ public class StanfordResources {
 	}
 
 
-	public ArrayList<String> getPhrases(String text){
-		ArrayList<String> phrases = new ArrayList<String>();
+	public void buildPhrases(ArrayList<String> phrases, String text){
 		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
 		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
-		Tree currTree = lp.apply(rawWords);
 
 		for(Tree sentence: getSentenceTrees(text)){
 			ArrayList<Tree> treeList = new ArrayList<Tree>();
 			getPhrases(treeList, sentence);
-			
+
 			for(Tree t : treeList){
 				TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 				GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
@@ -90,11 +93,10 @@ public class StanfordResources {
 				List<TreeGraphNode> graphNodes = new ArrayList<TreeGraphNode>(gs.getNodes());
 				Collections.sort(graphNodes, new TreeGraphComparator());
 				for(TreeGraphNode tgn: graphNodes){
-					//System.out.println(tgn.label().word());
 					String word = tgn.label().word();
 
 					if(word != null){
-						if(word.matches("[\\dA-Za-z ]*[:]?[\\dA-Za-z& ]+") && hasStarted){
+						if(word.matches("[\\dA-Za-z ]*[/:-]?[\\dA-Za-z ]*[/-:]?[\\dA-Za-z& ]+") && hasStarted){
 							sb.append(" ");
 						}
 						hasStarted = true;
@@ -103,14 +105,8 @@ public class StanfordResources {
 					}
 				}
 				phrases.add(sb.toString());
-				Out.prln(sb);
-				Out.prln();
 			}
 		}
-
-
-
-		return phrases;
 	}
 
 
@@ -118,58 +114,29 @@ public class StanfordResources {
 
 	private void getPhrases(ArrayList<Tree> treeList, Tree currTree){
 		if(currTree == null){
-			//Out.prln(currTree.size());
 			return;
 		}
 		for(Tree t:currTree.getChildrenAsList()){
-			
-			if(t.label().toString().equals("VB") || t.label().toString().equals("PRP")) {
-				treeList.add(t);
-				//Out.prln(treeList);
-			}
-			else if(t.label().toString().equals("NNP") && Character.isUpperCase(t.toString().split(" ")[1].charAt(0))) {
-				treeList.add(t);
-			}
-			else if(t.label().toString().equals("NP") &&  t.size()>8 && t.size()<32){
-				treeList.add(t);
-			}
-			else if(t.label().toString().equals("VP") &&  t.size()>8 && t.size()<32){
+
+//			if(t.label().toString().equals("VB") || t.label().toString().equals("PRP")) {
+//				treeList.add(t);
+//			}
+//			else if(t.label().toString().equals("NNP") && Character.isUpperCase(t.toString().split(" ")[1].charAt(0))) {
+//				treeList.add(t);
+//			}
+//			else 
+			if(t.label().toString().equals("NP") &&  t.size()>5 && t.size()<32){
 				treeList.add(t);
 			}
-			else if(t.label().toString().equals("SBARQ") || t.label().toString().equals("WHNP") || t.label().toString().equals("SQ") || t.label().toString().equals("WP")){
+			else if(t.label().toString().equals("VP") &&  t.size()>5 && t.size()<32){
 				treeList.add(t);
 			}
-			else if(t.label().toString().equals("VP")||t.label().toString().equals("NP")||t.label().toString().equals("NPZ") || t.label().toString().equals("DT") || t.label().toString().equals("NN") && t.label().toString().equals("([^.?!]*)\\?")){
-				treeList.add(t);
-			}
-		}
-		for(Tree t:currTree.getChildrenAsList()){
-			getPhrases(treeList,t);
+			else getPhrases(treeList,t);
 		}
 	}
 
-	//	private void getPhrases(ArrayList<Tree> treeList, Tree currTree, String pos){
-	//		if(currTree == null){
-	//			return;
-	//		}
-	//		else if(currTree.label().toString().equals(pos)){
-	//			treeList.add(currTree);
-	//		}
-	//
-	//		else{
-	//			for(Tree t:currTree.getChildrenAsList()){
-	//				getPhrases(treeList,t,pos);
-	//			}
-	//		}
-	//	}
-
 
 	private ArrayList<Tree> getSentenceTrees(String text){
-		// creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
-
-
-		// read some text in the text variable
-
 		// create an empty Annotation just with the given text
 		Annotation document = new Annotation(text);
 
@@ -181,27 +148,56 @@ public class StanfordResources {
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 		ArrayList<Tree> trees = new ArrayList<Tree>();
 		for(CoreMap sentence: sentences) {
-			// traversing the words in the current sentence
-			// a CoreLabel is a CoreMap with additional token-specific methods
-			for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
-				// this is the text of the token
-				String word = token.get(TextAnnotation.class);
-				// this is the POS tag of the token
-				String pos = token.get(PartOfSpeechAnnotation.class);
-				// this is the NER label of the token
-				String ne = token.get(NamedEntityTagAnnotation.class); 
-			}
-
-			// this is the parse tree of the current sentence
 			Tree tree = sentence.get(TreeAnnotation.class);
 			trees.add(tree);
-			// this is the Stanford dependency graph of the current sentence
-			//SemanticGraph dependencies = sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);
 		}
 		return trees;
 
 	}
 
+	
+	
+	public int getNamedEntityScore(String text){
+		Annotation document = new Annotation(text);
+
+		// run all Annotators on this text
+		pipeline.annotate(document);
+
+		List<CoreMap> parts = document.get(SentencesAnnotation.class);
+		int score = 0;
+		for(CoreMap part: parts) {
+			for (CoreLabel token: part.get(TokensAnnotation.class)) {
+				String ne = token.get(NamedEntityTagAnnotation.class); 
+				//System.out.println(word +"="+ne );
+				if(ne.equals(NEEnum.DATE.name())){
+					score += NEEnum.DATE.score();
+				}
+				else if(ne.equals(NEEnum.DURATION.name())){
+					score += NEEnum.DURATION.score();
+				}
+				else if(ne.equals(NEEnum.LOCATION.name())){
+					score += NEEnum.LOCATION.score();
+				}
+				else if(ne.equals(NEEnum.MONEY.name())){
+					score += NEEnum.MONEY.score();
+				}
+				else if(ne.equals(NEEnum.NUMBER.name())){
+					score += NEEnum.NUMBER.score();
+				}
+				else if(ne.equals(NEEnum.ORGANIZATION.name())){
+					score += NEEnum.ORGANIZATION.score();
+				}
+				else if(ne.equals(NEEnum.PERSON.name())){
+					score += NEEnum.PERSON.score();
+				}
+				else if(ne.equals(NEEnum.TIME.name())){
+					score += NEEnum.TIME.score();
+				}
+			}
+		}
+		return score;
+	}
+	
 
 
 	public void parseThreadPart()
@@ -210,32 +206,15 @@ public class StanfordResources {
 		{
 			String parseSentence = getThreadPart();
 
-			// This option shows loading and using an explicit tokenizer
-			TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-			List<CoreLabel> rawWords2 = tokenizerFactory.getTokenizer(new StringReader(parseSentence)).tokenize();
-			Tree parse = lp.apply(rawWords2);
-			//parse.
-			TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-			GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-			GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-			StringBuilder sb = new StringBuilder();
-			//		    for(TreeGraphNode t: gs.getNodes()){
-			//		    	System.out.println(t.label().word());
-			//		    }
-			//List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
-			//		    System.out.println();
-			//		    System.out.println(tdl);
-			//		    System.out.println();
-
-			Out.prln("******************Important Phrases*****************************");
-			getPhrases(parseSentence);
-			Out.prln("******************/Important Phrases*****************************");
+			Out.prln("******************NP*****************************");
+			ArrayList<String> list = new ArrayList<String>();
+			buildPhrases(list,parseSentence);
+			for(String s: list){
+				System.out.println(s);
+			}
+			
+			Out.prln("******************/NP*****************************");
 			Out.prln();
-
-			TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
-			//tp.printTree(parse);
-
-			//tp.
 
 		}
 		catch(Exception e)
@@ -255,5 +234,4 @@ public class StanfordResources {
 	}
 
 }
-
 

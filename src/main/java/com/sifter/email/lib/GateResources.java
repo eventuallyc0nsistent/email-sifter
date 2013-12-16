@@ -66,15 +66,7 @@ public class GateResources {
 			//get the jape transducer that was built
 			transducerParam.put("grammarURL", getClass().getResource("/jape/main.jape"));
 			ProcessingResource japeTransducer=(ProcessingResource) Factory.createResource("gate.creole.Transducer", transducerParam);
-			/*        ProcessingResource pr1 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpTokenizer", params);
-                        ProcessingResource pr2 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpSentenceSplit", params);
-                        ProcessingResource pr3 = (ProcessingResource) Factory.createResource("com.ontotext.gate.gazetteer.HashGazetteer",gazparam);
-                        ProcessingResource pr4 = (ProcessingResource) Factory.createResource("gate.opennlp.OpenNlpPOS", params);
-                        ProcessingResource pr5 = (ProcessingResource) Factory.createResource("gate.creole.Transducer",transducerparam);
-			 */
 			serAnCtrlr.add(japeTransducer);
-			
-			
 			Out.prln("Processing resources are loaded");
 		}
 		catch (Exception e) 
@@ -214,7 +206,7 @@ public class GateResources {
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
 		
-		StanfordResources stanfordParser = new StanfordResources();
+		StanfordResources stanfordParser = StanfordResources.getInstance();
 		
 //		for(Annotation tpAnnot : threadPartAnnotSet){
 //			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){

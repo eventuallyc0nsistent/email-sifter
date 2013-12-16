@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import com.sifter.email.lib.CategoryEnum;
 import com.sifter.email.lib.GateResources;
+import com.sifter.email.lib.StanfordResources;
 
 import gate.util.GateException;
 
@@ -44,6 +45,7 @@ public class Main {
         final HttpServer server = startServer();
         System.out.println(CategoryEnum.ThreadHeader.getCategory());
         GateResources gr = GateResources.getInstance();
+        StanfordResources sr = StanfordResources.getInstance();
         gr.initialize();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
