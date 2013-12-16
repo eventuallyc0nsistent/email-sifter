@@ -126,6 +126,17 @@ public class AnnotController {
 		if(str != null){
 			str = str.replaceAll("\\Q[Quoted  text  hidden]\\E", "");
 			str = str.replaceAll("\n", " ");
+			str = str.replaceAll("'d ", " would ");
+			str = str.replaceAll("'m ", " am ");
+			str = str.replaceAll("'ll ", " will ");
+			str = str.replaceAll("Did'nt", "Did not");
+			str = str.replaceAll("did'nt ", "did not");
+			str = str.replaceAll("won't", "will not");
+			str = str.replaceAll("Won't ", "Will not");
+			str = str.replaceAll("Had'nt", "Had not");
+			str = str.replaceAll("had'nt ", "had not");
+			str = str.replaceAll("Should'nt", "Should not");
+			str = str.replaceAll("should'nt ", "should not");
 			return str;
 		}
 		else
