@@ -81,6 +81,7 @@ public class SummaryController {
 		ArrayList<String> summSet = new ArrayList<String>();
 		summSet.add("Subject: "+thread.getSubject());
 		for(Phrase p: phrases){
+			//String sender = thread.getThreadParts().get(p.getPosition() - 1).getSenderName();
 			summSet.add(p.getPhrase());
 		}
 		summary.setSummary(summSet);
