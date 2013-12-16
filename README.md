@@ -7,7 +7,8 @@ Tagging emails as they arrive in threads. Threads can be long or short conversat
 We will be following this branching model : [link](http://nvie.com/posts/a-successful-git-branching-model/)
 
 Contributers:
-Kiran Ravi Koduru
-Lakshmi Udaya Duvvuri
-Manas Pawar
-Shreyas Valmiki
+
++   Kiran Koduru
++   Lakshmi Duvvuri
++   Manas Pawar
++   Shreyas Valmiki
