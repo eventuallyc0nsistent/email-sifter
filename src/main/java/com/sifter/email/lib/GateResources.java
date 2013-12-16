@@ -151,7 +151,7 @@ public class GateResources {
 			return null;
 	}
 	
-	public String getContent(Annotation annot, String cat) throws Exception{	
+	public String getContentFromCategory(Annotation annot, String cat) throws Exception{	
 		if(annot.getFeatures().get(Constants.CATEGORY).equals(cat)){
 			//return (String)annot.getFeatures().get(Constants.STRING);
 			return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
@@ -168,11 +168,18 @@ public class GateResources {
 	}
 	
 	
-	public String getContent(Annotation annot) throws Exception{	
+	public String getContentFromAnnot(Annotation annot) throws Exception{	
 		//return (String)annot.getFeatures().get(Constants.STRING);
 		return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
 	}
 	
+	public String getContentFromKind(Annotation annot, String kind) throws InvalidOffsetException{
+		if(annot.getFeatures().get(Constants.KIND).equals(kind)){
+			//return (String)annot.getFeatures().get(Constants.STRING);
+			return corpus.get(0).getContent().getContent(annot.getStartNode().getOffset().longValue(),annot.getEndNode().getOffset().longValue()).toString();
+		}
+		return null;
+	}
 	
 	public void freeResources(){
 		corpus.cleanup();
@@ -198,8 +205,8 @@ public class GateResources {
 		HashSet<Annotation> subjAnnotSet = gr.getAnnotations("SubjectMail");
 		if(subjAnnotSet.iterator().hasNext()){
 			Annotation subjAnnot = subjAnnotSet.iterator().next();
-			thread.setSubject(gr.getContent(subjAnnot));
-			Out.prln(gr.getContent(subjAnnot));
+			thread.setSubject(gr.getContentFromAnnot(subjAnnot));
+			Out.prln(gr.getContentFromAnnot(subjAnnot));
 		}
 		
 		Out.prln("\n\n Thread Part \n\n");
@@ -243,10 +250,10 @@ public class GateResources {
 			sortedAnnots.addSortedExclusive(an);
 		}
 		//ThreadPart tp = new ThreadPart();
-		for (int i = sortedAnnots.size()-1; i>=0; --i) {
+		for (int i = 0; i < sortedAnnots.size(); ++i) {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
-			if(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
-				tp.setBody(gr.getContent(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
+			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
+				tp.setBody(gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory()));
 				
 				// remove [Quoted  text  hidden]
 				String removedQuotedText = tp.getBody().replace("[Quoted  text  hidden]", "");
@@ -257,14 +264,14 @@ public class GateResources {
 //				tp = new ThreadPart();
 
 			}
-			if(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
-				tp.setSenderEmail(gr.getContent(tpAnnot,CategoryEnum.FromEmail.getCategory()));
+			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.FromEmail.getCategory()) != null){
+				tp.setSenderEmail(gr.getContentFromCategory(tpAnnot,CategoryEnum.FromEmail.getCategory()));
 			}
-			if(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()) != null){
-				tp.setSentTime(gr.getContent(tpAnnot,CategoryEnum.SentDate.getCategory()));
+			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.SentDate.getCategory()) != null){
+				tp.setSentTime(gr.getContentFromCategory(tpAnnot,CategoryEnum.SentDate.getCategory()));
 			}
-			if(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
-				tp.setSenderName(gr.getContent(tpAnnot,CategoryEnum.SenderName.getCategory()));
+			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
+				tp.setSenderName(gr.getContentFromCategory(tpAnnot,CategoryEnum.SenderName.getCategory()));
 			}
 		}
 		
