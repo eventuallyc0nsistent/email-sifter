@@ -71,7 +71,7 @@ public class StanfordResources {
 	}
 
 
-	public ArrayList<String> getPhrases(String text, String pos){
+	public ArrayList<String> getPhrases(String text){
 		ArrayList<String> phrases = new ArrayList<String>();
 		TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
 		List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
@@ -80,7 +80,7 @@ public class StanfordResources {
 		for(Tree sentence: getSentenceTrees(text)){
 			ArrayList<Tree> treeList = new ArrayList<Tree>();
 			getPhrases(treeList, sentence);
-
+			
 			for(Tree t : treeList){
 				TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 				GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
@@ -122,9 +122,10 @@ public class StanfordResources {
 			return;
 		}
 		for(Tree t:currTree.getChildrenAsList()){
-
+			
 			if(t.label().toString().equals("VB") || t.label().toString().equals("PRP")) {
 				treeList.add(t);
+				//Out.prln(treeList);
 			}
 			else if(t.label().toString().equals("NNP") && Character.isUpperCase(t.toString().split(" ")[1].charAt(0))) {
 				treeList.add(t);
@@ -133,6 +134,12 @@ public class StanfordResources {
 				treeList.add(t);
 			}
 			else if(t.label().toString().equals("VP") &&  t.size()>8 && t.size()<32){
+				treeList.add(t);
+			}
+			else if(t.label().toString().equals("SBARQ") || t.label().toString().equals("WHNP") || t.label().toString().equals("SQ") || t.label().toString().equals("WP")){
+				treeList.add(t);
+			}
+			else if(t.label().toString().equals("VP")||t.label().toString().equals("NP")||t.label().toString().equals("NPZ") || t.label().toString().equals("DT") || t.label().toString().equals("NN") && t.label().toString().equals("([^.?!]*)\\?")){
 				treeList.add(t);
 			}
 		}
@@ -183,7 +190,6 @@ public class StanfordResources {
 				String pos = token.get(PartOfSpeechAnnotation.class);
 				// this is the NER label of the token
 				String ne = token.get(NamedEntityTagAnnotation.class); 
-				System.out.println(word );
 			}
 
 			// this is the parse tree of the current sentence
@@ -221,14 +227,11 @@ public class StanfordResources {
 			//		    System.out.println(tdl);
 			//		    System.out.println();
 
-			Out.prln("******************NP*****************************");
-			getPhrases(parseSentence,"NP");
-			Out.prln("******************/NP*****************************");
+			Out.prln("******************Important Phrases*****************************");
+			getPhrases(parseSentence);
+			Out.prln("******************/Important Phrases*****************************");
 			Out.prln();
 
-			Out.prln("******************VP*****************************");
-			getPhrases(parseSentence,"VP");
-			Out.prln("******************/VP*****************************");
 			TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed");
 			//tp.printTree(parse);
 
