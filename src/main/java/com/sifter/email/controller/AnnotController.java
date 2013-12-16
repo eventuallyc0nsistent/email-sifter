@@ -47,10 +47,11 @@ public class AnnotController {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				String body = gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory());
-				body = body.replaceAll("\\Q[Quoted  text  hidden]\\E", "");
-				body = body.replaceAll("\n", " ");
-				//System.out.println(body);
-				tp.setBody(body);
+				body = cleanString(body);
+				if(body != null){
+					tp.setBody(body);
+				}
+				
 				thread.addThreadPart(tp);
 				tp = new ThreadPart();
 			}
@@ -155,19 +156,22 @@ public class AnnotController {
 	
 	private String cleanString(String str){
 		if(str != null){
-			str = str.replaceAll("\\Q[Quoted  text  hidden]\\E", "");
+			str = str.replaceAll("\\[?[ ]*Quoted[ ]*text[ ]*hidden.*", "");
 			str = str.replaceAll("\n", " ");
-			str = str.replaceAll("'d ", " would ");
-			str = str.replaceAll("'m ", " am ");
-			str = str.replaceAll("'ll ", " will ");
+			str = str.replaceAll("'d", " would");
+			str = str.replaceAll("'m", " am");
+			str = str.replaceAll("'ll", " will");
 			str = str.replaceAll("Did'nt", "Did not");
 			str = str.replaceAll("did'nt ", "did not");
 			str = str.replaceAll("won't", "will not");
-			str = str.replaceAll("Won't ", "Will not");
+			str = str.replaceAll("Won't", "Will not");
 			str = str.replaceAll("Had'nt", "Had not");
-			str = str.replaceAll("had'nt ", "had not");
+			str = str.replaceAll("had'nt", "had not");
 			str = str.replaceAll("Should'nt", "Should not");
-			str = str.replaceAll("should'nt ", "should not");
+			str = str.replaceAll("should'nt", "should not");
+			str = str.replaceAll("[Ss]ent[ ]+[Ff]rom[ ]+[Mm]y[ ]+.*", "");
+			str = str.replaceAll("https://mail.google.com[/.?=&\\w\\d]*", "");
+			str = str.replaceAll("[\\d]*[\\d]/[\\d]*[\\d]/[\\d]*[\\d][ ]*Gmail.*", "");
 			return str;
 		}
 		else

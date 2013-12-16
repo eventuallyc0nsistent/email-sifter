@@ -29,17 +29,16 @@ public class SummaryController {
 	
 	}
 	
-//	private boolean removeRepetition(ArrayList<Phrase> phrases, Phrase phrase){
-//		ArrayList<Integer> removeInd = new ArrayList<Integer>();
-//		for(Phrase p:phrases){
-//			if(p.getPhrase().contains(phrase.getPhrase())){
-//				return false;
-//			}
-//			else if(phrase.getPhrase().contains(p.getPhrase())){
-//				removeInd.add(phrases.indexOf(p));
-//			}
-//		}
-//	}
+	private boolean isRepeated(ArrayList<Phrase> phrases, Phrase phrase){
+		for(Phrase p:phrases){
+			if(p.getPhrase().contains(phrase.getPhrase()) || phrase.getPhrase().contains(p.getPhrase())){
+				return true;
+			}
+
+			
+		}
+		return false;
+	}
 	
 	
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
@@ -57,13 +56,15 @@ public class SummaryController {
 		while(phrases.size() <= 6 && i < list.size()){
 			Phrase p = list.get(i++);
 			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
-				phrases.add(p);
-				addedMessagePos.add(p.getPosition());
+				if(!isRepeated(phrases,p)){
+					phrases.add(p);
+					addedMessagePos.add(p.getPosition());
+				}
 			}
 		}
 		
 		Collections.sort(phrases, new PhrasePositionComparator());
-		HashSet<String> summSet = new HashSet<String>();
+		ArrayList<String> summSet = new ArrayList<String>();
 		for(Phrase p: phrases){
 			summSet.add(p.getPhrase());
 		}
@@ -77,7 +78,7 @@ public class SummaryController {
 	class  PhraseScoreComparator implements Comparator<Phrase>{
 		@Override
 		public int compare(Phrase p1, Phrase p2) {
-			return p2.getScore() - p1.getScore();
+			return p2.getScore() - p1.getScore() == 0? p1.getPhrase().length() - p2.getPhrase().length():p2.getScore() - p1.getScore();
 		}
 	}
 	
