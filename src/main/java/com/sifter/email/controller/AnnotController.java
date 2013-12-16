@@ -47,8 +47,9 @@ public class AnnotController {
 			Annotation tpAnnot = (Annotation) sortedAnnots.get(i);
 			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory()) != null){
 				String body = gr.getContentFromCategory(tpAnnot,CategoryEnum.ThreadBody.getCategory());
-				body.replaceAll("\\[Quoted  text  hidden\\]", "");
-				body.replaceAll("\\n", " ");
+				body = body.replaceAll("\\Q[Quoted  text  hidden]\\E", "");
+				body = body.replaceAll("\n", " ");
+				//System.out.println(body);
 				tp.setBody(body);
 				thread.addThreadPart(tp);
 				tp = new ThreadPart();
@@ -82,12 +83,12 @@ public class AnnotController {
 	}
 	
 	
-	private ArrayList<String> buildAnnots(String annot) throws Exception{
+	private HashSet<String> buildAnnots(String annot) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
-		ArrayList<String> list = new ArrayList<String>();
+		HashSet<String> list = new HashSet<String>();
 		
 		for(Annotation a : annots){
-			String str = gr.getContentFromAnnot(a);
+			String str = cleanString(gr.getContentFromAnnot(a));
 			if(str != null){
 				list.add(str);
 			}
@@ -95,12 +96,12 @@ public class AnnotController {
 		return list;
 	}
 	
-	private ArrayList<String> buildAnnotsFromCat(String annot, String cat) throws Exception{
+	private HashSet<String> buildAnnotsFromCat(String annot, String cat) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
-		ArrayList<String> list = new ArrayList<String>();
+		HashSet<String> list = new HashSet<String>();
 		
 		for(Annotation a : annots){
-			String str = gr.getContentFromCategory(a, cat);
+			String str = cleanString(gr.getContentFromCategory(a, cat));
 			if(str != null){
 				list.add(str);
 			}
@@ -108,16 +109,27 @@ public class AnnotController {
 		return list;
 	}
 	
-	private ArrayList<String> buildAnnotsFromKind(String annot, String kind) throws Exception{
+	private HashSet<String> buildAnnotsFromKind(String annot, String kind) throws Exception{
 		HashSet<Annotation> annots = gr.getAnnotations(annot);
-		ArrayList<String> list = new ArrayList<String>();
+		HashSet<String> list = new HashSet<String>();
 		
 		for(Annotation a : annots){
-			String str = gr.getContentFromKind(a, kind);
+			String str = cleanString(gr.getContentFromKind(a, kind));
 			if(str != null){
 				list.add(str);
 			}
 		}
 		return list;
+	}
+	
+	private String cleanString(String str){
+		if(str != null){
+			str = str.replaceAll("\\Q[Quoted  text  hidden]\\E", "");
+			str = str.replaceAll("\n", " ");
+			return str;
+		}
+		else
+			return null;
+		
 	}
 }
