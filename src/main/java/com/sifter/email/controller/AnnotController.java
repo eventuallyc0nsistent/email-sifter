@@ -228,8 +228,12 @@ public class AnnotController {
 			str = str.replaceAll("[Ss]ent[ ]+[Vv]ia[ ]+B.*", "");
 			str = str.replaceAll("https://mail.google.com[/.?=&\\w\\d]*", "");
 			str = str.replaceAll("[\\d]*[\\d]/[\\d]*[\\d]/[\\d]*[\\d][ ]*Gmail.*", "");
-			str = str.replaceAll("\\\\n[A-Z][a-zA-Z0-9]*[ ]*([A-Z][a-zA-Z0-9]*)?[ ]*.*\\\\n.*", "");
+			//Tries to match signature
+			str = str.replaceAll("\n((([Rr]egards)|([Th]anks)|([Bb]est)|([W]arm)).*[,.!]?).*([A-Z][a-zA-Z0-9,.-])*[ ]*([A-Z][a-zA-Z0-9,.-]*)*[ ]*.*\n?.*", "");
+			//Matches a few unwanted dates
 			str = str.replaceAll("[\\w]+[ ]+[\\d]+[ ]*,[ ]*[\\d]+[ ]*at[ ]*[\\d]+[ ]*:[ ]*[\\d]+[ ]*[\\w]*", "");
+			//Matches dates like this Wed, 19 Dec 2012 21:20:40+0800
+			str = str.replaceAll("[A-Za-z]{3}[, ]+[0-9]+((th)|(rd))?[ ]*[,]?[ ]*[0-9]+[ ]*(at)?[ ]*.*", "");
 			str = str.replaceAll("NOTICE.*", "");
 			str = str.replaceAll("<.*>.*", "");
 			str = str.replaceAll("\\[.*\\]", "");
