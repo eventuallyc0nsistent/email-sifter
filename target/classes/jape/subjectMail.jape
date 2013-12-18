@@ -1,0 +1,19 @@
+Phase: GetMailSubject
+Input: Token Date
+Options: control = once
+
+Rule: subjectMail
+(
+			
+		{Date.kind == date}
+		{Token.string == "Gmail"}
+		{Token.subkind == dashpunct}
+		(
+			({Token})*
+		):subject
+		{Token.string == "https"}
+):subjectmail
+
+-->
+
+:subject.SubjectMail = {rule="Mail Subject"}

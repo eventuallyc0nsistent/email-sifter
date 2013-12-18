@@ -1,0 +1,82 @@
+Phase: GetThreads
+Input: Token Lookup Person Date Address
+Options: control = appelt
+
+Macro: PERSON_IDENTIFIER
+(
+	{Person}
+	|
+	(	
+		{Token.kind == word, Token.category == NNP, Token.orth == upperInitial}
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+	)
+	|
+	(
+		{Person}
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+	)
+	|
+	(
+		({Token.kind == word, Token.category == NNP, Token.orth == upperInitial})?
+		{Person}
+	)
+	
+)
+
+Rule: threadIdentify
+(	
+	(
+		((PERSON_IDENTIFIER)?):senderName
+		({Token.kind == symbol, Token.string == "<"})
+		({Address.kind == email}):fromEmailAddr
+		({Token.kind == symbol, Token.string == ">"})
+	):sender
+
+	({Date.kind == date}
+	{Token.kind == word, Token.string == "at"}
+	{Date.kind == time}):sentDate
+
+	(
+		{Token.kind == word, Token.string == "To"}
+		{Token.kind == punctuation, Token.string == ":"}
+		(
+			(
+				((PERSON_IDENTIFIER)?)
+			):toName
+			({Token.kind == symbol, Token.string == "<"})?
+			({Address.kind == email}):toEmailAddr
+			({Token.kind == symbol, Token.string == ">"})?
+			({Token.kind == punctuation, Token.string == ","})?
+		)+
+	)
+
+	(
+		(
+			{Token.kind == word, Token.string == "Cc"}
+			{Token.kind == punctuation, Token.string == ":"}
+			(
+				(
+					((PERSON_IDENTIFIER)?)
+				):ccName
+				({Token.kind == symbol, Token.string == "<"})?
+				({Address.kind == email}):ccEmailAddr
+				({Token.kind == symbol, Token.string == ">"})?
+				({Token.kind == punctuation, Token.string == ","})?
+			)+
+		)*
+	)
+
+):threadheader
+
+-->
+
+:sender.ThreadPart = {rule="Thread", category = "Sender"},
+:threadheader.Thread = {rule="Thread", category = "Thread Header"},
+:toEmailAddr.ThreadPart = {rule="Thread", category = "To Email"},
+:ccEmailAddr.ThreadPart = {rule="Thread", category="CC Email"},
+:fromEmailAddr.ThreadPart = {rule="Thread", category="From Email"},
+:sentDate.ThreadPart = {rule="Thread", category="Sent Date"},
+:senderName.ThreadPart = {rule="Thread", category="Sender Name"},
+:toName.ThreadPart = {rule="Thread", category="To Name"},
+:ccName.ThreadPart = {rule="Thread", category="CC Name"}

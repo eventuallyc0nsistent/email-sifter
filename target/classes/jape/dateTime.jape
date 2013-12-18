@@ -1,0 +1,10 @@
+Phase: AddressPhase
+Input: Date
+Options: control = appelt
+
+Rule: dateTime
+(
+	{Date.kind == dateTime}
+):dateTime
+-->
+:dateTime.DateTime = {}
