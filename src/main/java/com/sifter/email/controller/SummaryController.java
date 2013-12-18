@@ -67,7 +67,7 @@ public class SummaryController {
 
 		int i = 0;
 		
-		while(phrases.size() <= 8 && i < list.size()){
+		while(phrases.size() <= 10 && i < list.size()){
 			Phrase p = list.get(i++);
 			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
 				if(!isRepeated(phrases,p)){
@@ -81,8 +81,16 @@ public class SummaryController {
 		ArrayList<String> summSet = new ArrayList<String>();
 		summSet.add("Subject: "+thread.getSubject());
 		for(Phrase p: phrases){
-			//String sender = thread.getThreadParts().get(p.getPosition() - 1).getSenderName();
-			summSet.add(p.getPhrase());
+//			String sender = thread.getThreadParts().get(p.getPosition() - 1).getSenderName();
+//			if(sender != null){
+//				//sender = sender.split("[ ]*")[0];
+//				summSet.add(sender+" says ..."+AnnotController.cleanString(p.getPhrase())+"...");
+//			}
+//			else
+			String str = AnnotController.cleanString(p.getPhrase());
+			if(!str.isEmpty())
+				summSet.add("..."+str+"...");
+			
 		}
 		summary.setSummary(summSet);
 		summary.setMeta(thread.getMeta());
@@ -166,7 +174,7 @@ public class SummaryController {
 			
 			System.out.println("Summary phrases: \n");
 			for(String s:summary.getSummary()){
-				System.out.println("\t*\t"+s);
+				System.out.println("\t"+s);
 			}
 			System.out.println();
 		}

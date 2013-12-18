@@ -95,7 +95,7 @@ public class StanfordResources {
 					String word = tgn.label().word();
 
 					if(word != null){
-						if(word.matches("[\\dA-Za-z ]*[/:-]?[\\dA-Za-z ]*[/-:]?[\\dA-Za-z& ]+") && hasStarted){
+						if(word.matches("[\\dA-Za-z ]*[/:-]?[\\dA-Za-z ]*[/-:]?[\\dA-Za-z&$ ]+") && hasStarted){
 							sb.append(" ");
 						}
 						hasStarted = true;
@@ -119,10 +119,10 @@ public class StanfordResources {
 		}
 		for(Tree t:currTree.getChildrenAsList()){
 
-			if(t.label().toString().equals("NP") &&  t.size()>5 && t.size()<32){
+			if(t.label().toString().equals("NP") &&  t.size()>6 && t.size()<32){
 				treeList.add(t);
 			}
-			else if(t.label().toString().equals("VP") &&  t.size()>5 && t.size()<32){
+			else if(t.label().toString().equals("VP") &&  t.size()>6 && t.size()<32){
 				treeList.add(t);
 			}
 			else getPhrases(treeList,t);
@@ -170,7 +170,6 @@ public class StanfordResources {
 		for(CoreMap part: parts) {
 			for (CoreLabel token: part.get(TokensAnnotation.class)) {
 				String ne = token.get(NamedEntityTagAnnotation.class); 
-				//System.out.println(word +"="+ne );
 				if(ne.equals(NEEnum.DATE.name())){
 					score += NEEnum.DATE.score();
 				}

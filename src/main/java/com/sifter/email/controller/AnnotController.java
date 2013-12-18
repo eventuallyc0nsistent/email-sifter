@@ -194,7 +194,7 @@ public class AnnotController {
 	 * @param str
 	 * @return
 	 */
-	private String cleanString(String str){
+	public static String cleanString(String str){
 		if(str != null){
 			str = str.replaceAll("Quoted.*","");
 			str = str.replaceAll("'d", " would");
@@ -206,6 +206,8 @@ public class AnnotController {
 			str = str.replaceAll("Won't", "Will not");
 			str = str.replaceAll("Had'nt", "Had not");
 			str = str.replaceAll("had'nt", "had not");
+			str = str.replaceAll("Can't", "Can not");
+			str = str.replaceAll("can't", "can not");
 			str = str.replaceAll("Should'nt", "Should not");
 			str = str.replaceAll("should'nt", "should not");
 			str = str.replaceAll("'ve", "have");
@@ -220,7 +222,10 @@ public class AnnotController {
 			str = str.replaceAll("<.*>.*", "");
 			str = str.replaceAll("\\[.*\\]", "");
 			str = str.replaceAll("__+.*", "");
-			str = str.replaceAll("-RSB-.*-LSB-.*", "");
+			str = str.replaceAll("-RSB-.*", "");
+			str = str.replaceAll("-LSB-.*", "");
+			str = str.replaceAll("-RRB-.*", "");
+			str = str.replaceAll("-LRB-.*", "");
 			str = str.replaceAll("\n.*\\|.*", "");
 			str = str.replaceAll("\n", " ");
 			return str;
