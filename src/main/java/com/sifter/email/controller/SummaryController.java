@@ -12,7 +12,7 @@ import java.util.HashSet;
 import com.sifter.email.lib.StanfordResources;
 import com.sifter.email.model.*;
 public class SummaryController {
-	
+
 	/**
 	 * Builds index based on NER and spatial properties of the phrase
 	 * @param list
@@ -20,7 +20,7 @@ public class SummaryController {
 	 */
 	private void buildIndex(ArrayList<Phrase> list, int total){
 		StanfordResources sr = StanfordResources.getInstance();
-		
+
 		for(Phrase p:list){
 			int score = sr.getNamedEntityScore(p.getPhrase()); 
 
@@ -32,7 +32,7 @@ public class SummaryController {
 			}
 			p.setScore(score);
 		}
-	
+
 	}
 	/**
 	 * Checks if the phrase has been repeated
@@ -46,11 +46,11 @@ public class SummaryController {
 				return true;
 			}
 
-			
+
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Builds the summary model
 	 * @param thread
@@ -66,7 +66,7 @@ public class SummaryController {
 		Summary summary = new Summary();
 
 		int i = 0;
-		
+
 		while(phrases.size() <= 10 && i < list.size()){
 			Phrase p = list.get(i++);
 			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
@@ -76,28 +76,32 @@ public class SummaryController {
 				}
 			}
 		}
-		
+
 		Collections.sort(phrases, new PhrasePositionComparator());
 		ArrayList<String> summSet = new ArrayList<String>();
-		summSet.add("Subject: "+thread.getSubject());
 		for(Phrase p: phrases){
-//			String sender = thread.getThreadParts().get(p.getPosition() - 1).getSenderName();
-//			if(sender != null){
-//				//sender = sender.split("[ ]*")[0];
-//				summSet.add(sender+" says ..."+AnnotController.cleanString(p.getPhrase())+"...");
-//			}
-//			else
 			String str = AnnotController.cleanString(p.getPhrase());
-			if(!str.isEmpty())
-				summSet.add("..."+str+"...");
-			
+			String sender = thread.getThreadParts().get(p.getPosition()).getSenderName();
+			if(sender != null && !sender.trim().isEmpty()){
+				if(!str.isEmpty()){
+					sender = sender.split(" ")[0];
+					summSet.add(sender+" says \""+str.trim()+"\"");
+				}
+			}
+			else{
+				if(!str.isEmpty())
+					summSet.add("Someone says \""+str.trim()+"\"");
+			}
+
+
 		}
+		summary.setSubject(thread.getSubject());
 		summary.setSummary(summSet);
 		summary.setMeta(thread.getMeta());
 		return summary;
 	}
-	
-	
+
+
 	/**
 	 * Compares in decreasing order of score
 	 * @author svalmiki
@@ -109,48 +113,49 @@ public class SummaryController {
 			return p2.getScore() - p1.getScore() == 0? p2.getPhrase().length() - p1.getPhrase().length():p2.getScore() - p1.getScore();
 		}
 	}
-	
+
 	class  PhrasePositionComparator implements Comparator<Phrase>{
 		@Override
 		public int compare(Phrase p1, Phrase p2) {
 			return p1.getPosition() - p2.getPosition();
 		}
 	}
-	
-	
+
+
 	public static void main(String[] args) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-		
+
 		while(true){
 			String path = "";
-			
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			System.out.println();
-	        System.out.println("Enter 1 for practice set and 2 for test set and 0 to exit:");
-	        try{
-	            int i = Integer.parseInt(br.readLine());
-	            if(i == 2){
-	            	path = "testset/test/";
-	            }
-	            else if(i == 0){
-	            	break;
-	            }
-	            
-	            System.out.println("Enter name of document: ");
-	            path = path+br.readLine();
-	        }catch(NumberFormatException nfe){
-	            System.err.println("Invalid Format!");
-	        }
-			
-			
-			
+			System.out.println("Enter 1 for practice set and 2 for test set and 0 to exit:");
+			try{
+				int i = Integer.parseInt(br.readLine());
+				if(i == 2){
+					path = "testset/test/";
+				}
+				else if(i == 0){
+					break;
+				}
+
+				System.out.println("Enter name of document: ");
+				path = path+br.readLine();
+			}catch(NumberFormatException nfe){
+				System.err.println("Invalid Format!");
+			}
+
+
+
 			EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
 			ArrayList<Phrase> list = new ArrayList<Phrase>();
 			list = aCtrl.getPhrases();
 			SummaryController sCtrl = new SummaryController();
 			Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
-			
-			System.out.println("All the people involved in the chain: \n");
+
+
+			System.out.println("All the people actively involved in the chain (all who wrote mails): \n");
 			for(String s:summary.getMeta().getPeopleList()){
 				System.out.println("\t"+s);
 			}
@@ -171,16 +176,20 @@ public class SummaryController {
 			}
 			System.out.println();
 			System.out.println();
-			
+
+			System.out.println("Subject: \n");
+			System.out.println("\t*\t"+summary.getSubject());
+			System.out.println();
+
 			System.out.println("Summary phrases: \n");
 			for(String s:summary.getSummary()){
 				System.out.println("\t"+s);
 			}
 			System.out.println();
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 }

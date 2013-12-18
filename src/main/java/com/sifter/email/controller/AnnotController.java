@@ -45,8 +45,8 @@ public class AnnotController {
 		}
 		
 		//Build meta information
-		thread.setMeta(buildMetaInformation());
-		
+		Meta meta = buildMetaInformation();
+		HashSet<String> peopleSet = new HashSet<String>();
 		thread.clearThreadParts();
 		ThreadPart tp = new ThreadPart();
 		for (int i = 0; i < sortedAnnots.size(); ++i) {
@@ -68,9 +68,21 @@ public class AnnotController {
 				tp.setSentTime(gr.getContentFromCategory(tpAnnot,CategoryEnum.SentDate.getCategory()));
 			}
 			if(gr.getContentFromCategory(tpAnnot,CategoryEnum.SenderName.getCategory()) != null){
-				tp.setSenderName(gr.getContentFromCategory(tpAnnot,CategoryEnum.SenderName.getCategory()));
+				String name = gr.getContentFromCategory(tpAnnot,CategoryEnum.SenderName.getCategory());
+				//Add names of all active participants into meta information
+				if(name != null && !name.trim().isEmpty()){
+					tp.setSenderName(name.trim());
+					peopleSet.add(name.trim());
+				}
+				else
+				{
+					tp.setSenderName("Someone");
+				}
+				
 			}
 		}
+		meta.setPeopleList(peopleSet);
+		thread.setMeta(meta);
 		return thread;
 	}
 	
@@ -88,7 +100,7 @@ public class AnnotController {
 		//DateTime
 		meta.setDateTimeList(buildAnnots(AnnotEnum.Date.name()));
 		//People
-		meta.setPeopleList(buildAnnots(AnnotEnum.Person.name()));
+		//meta.setPeopleList(buildAnnots(AnnotEnum.Person.name()));
 		//Address
 		return meta;
 	}
@@ -105,14 +117,14 @@ public class AnnotController {
 		int i = 0;
 		
 		ArrayList<String> strPhrases = new ArrayList<String>();
-		sr.buildPhrases(strPhrases,thread.getSubject());
-		buildPhraseList(phrases,strPhrases,i);
+//		sr.buildPhrases(strPhrases,thread.getSubject());
+//		buildPhraseList(phrases,strPhrases,i);
 		
 		for(ThreadPart tp: thread.getThreadParts()){
-			++i;
 			strPhrases = new ArrayList<String>();
 			sr.buildPhrases(strPhrases,tp.getBody());
 			buildPhraseList(phrases,strPhrases,i);
+			++i;
 		}
 		
 		return phrases;
@@ -196,7 +208,7 @@ public class AnnotController {
 	 */
 	public static String cleanString(String str){
 		if(str != null){
-			str = str.replaceAll("Quoted.*","");
+			str = str.replaceAll("Quoted.*\n?.*","");
 			str = str.replaceAll("'d", " would");
 			str = str.replaceAll("'m", " am");
 			str = str.replaceAll("'ll", " will");
@@ -206,8 +218,8 @@ public class AnnotController {
 			str = str.replaceAll("Won't", "Will not");
 			str = str.replaceAll("Had'nt", "Had not");
 			str = str.replaceAll("had'nt", "had not");
-			str = str.replaceAll("Can't", "Can not");
-			str = str.replaceAll("can't", "can not");
+			str = str.replaceAll("Can't", "Cannot");
+			str = str.replaceAll("can't", "cannot");
 			str = str.replaceAll("Should'nt", "Should not");
 			str = str.replaceAll("should'nt", "should not");
 			str = str.replaceAll("'ve", "have");
@@ -226,6 +238,9 @@ public class AnnotController {
 			str = str.replaceAll("-LSB-.*", "");
 			str = str.replaceAll("-RRB-.*", "");
 			str = str.replaceAll("-LRB-.*", "");
+			str = str.replaceAll("Cc.*\n", "");
+			str = str.replaceAll("``.*''", "");
+			str = str.replaceAll("--\n.*", "");
 			str = str.replaceAll("\n.*\\|.*", "");
 			str = str.replaceAll("\n", " ");
 			return str;

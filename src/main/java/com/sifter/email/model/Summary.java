@@ -8,7 +8,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Summary {
 	private Meta meta;
 	private ArrayList<String> summary;
+	private String subject;
 	
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 	public ArrayList<String> getSummary() {
 		return summary;
 	}
