@@ -1,5 +1,6 @@
 package com.sifter.email.model;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
@@ -7,6 +8,13 @@ public class EmailThread {
 	private String subject;
 	private ArrayList<ThreadPart> threadParts = new  ArrayList<ThreadPart>();
 	private Meta meta;
+	private HashSet<String> firstEmailPhrases = new HashSet<String>();
+	public HashSet<String> getFirstEmailPhrases() {
+		return firstEmailPhrases;
+	}
+	public void setFirstEmailPhrases(HashSet<String> firstEmailPhrases) {
+		this.firstEmailPhrases = firstEmailPhrases;
+	}
 	public String getSubject(){
 		return subject;
 	}

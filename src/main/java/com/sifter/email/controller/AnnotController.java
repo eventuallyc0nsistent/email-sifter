@@ -22,7 +22,7 @@ public class AnnotController {
 	 * @return
 	 * @throws Exception
 	 */
-	public EmailThread buildThread(URL url) throws Exception{
+	public void buildThreadAndPhraseList(URL url, EmailThread thread,ArrayList<Phrase> phrases) throws Exception{
 		 
 		gr.buildCorpusWithDoc(url);
 		gr.execute();
@@ -84,9 +84,18 @@ public class AnnotController {
 		meta.setPeopleList(peopleSet);
 		thread.setMeta(meta);
 		gr.freeResources();
+		
+		//set phrases
+		getPhrases(thread,phrases);
+		
+	}
+	/**
+	 * Gets email thread
+	 * @return
+	 */
+	public EmailThread getThread(){
 		return thread;
 	}
-	
 	/**
 	 * Gets all the emails URLs, Names, etc.
 	 * @return
@@ -111,8 +120,7 @@ public class AnnotController {
 	 * @return
 	 */
 	
-	public ArrayList<Phrase> getPhrases(){
-		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
+	private void getPhrases(EmailThread thread, ArrayList<Phrase> phrases){
 		
 		StanfordResources sr = StanfordResources.getInstance();
 		int i = 0;
@@ -120,15 +128,17 @@ public class AnnotController {
 		ArrayList<String> strPhrases = new ArrayList<String>();
 //		sr.buildPhrases(strPhrases,thread.getSubject());
 //		buildPhraseList(phrases,strPhrases,i);
-		
+		HashSet<String> firstEmailPhrases = new HashSet<String>();
+		boolean isFirstEmail = true;
 		for(ThreadPart tp: thread.getThreadParts()){
 			strPhrases = new ArrayList<String>();
 			sr.buildPhrases(strPhrases,tp.getBody());
-			buildPhraseList(phrases,strPhrases,i);
-			++i;
+			buildPhraseList(phrases,strPhrases,thread.getThreadParts().indexOf(tp));
+			if(isFirstEmail){
+				firstEmailPhrases.addAll(strPhrases);
+			}
 		}
-		
-		return phrases;
+		thread.setFirstEmailPhrases(firstEmailPhrases);
 	}
 	/**
 	 * B

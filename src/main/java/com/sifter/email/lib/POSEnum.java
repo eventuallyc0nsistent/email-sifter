@@ -1,4 +1,4 @@
-package com.sifter.email.model;
+package com.sifter.email.lib;
 /**
  * Parts of speech Enum
  * 

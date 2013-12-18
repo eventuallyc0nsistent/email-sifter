@@ -14,7 +14,10 @@ public class ThreadDao {
 	 */
 	public EmailThread getThreadForDoc(URL u) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-		return aCtrl.buildThread(u);
+		EmailThread thread = new EmailThread();
+		ArrayList<Phrase> list = new ArrayList<Phrase>();
+		aCtrl.buildThreadAndPhraseList(u,thread,list);
+		return thread;
 	}
 	/**
 	 * Gets summary for the service
@@ -25,9 +28,11 @@ public class ThreadDao {
 	public Summary getSummaryForDoc(URL u) throws Exception{
 		AnnotController aCtrl = new AnnotController();
 		SummaryController sCtrl = new SummaryController();
-		EmailThread thread = aCtrl.buildThread(u);
-		ArrayList<Phrase> phrases = aCtrl.getPhrases();
-		return sCtrl.getSummary(thread, phrases, thread.getThreadParts().size()+1);
+		EmailThread thread = new EmailThread();
+		ArrayList<Phrase> list = new ArrayList<Phrase>();
+		aCtrl.buildThreadAndPhraseList(u,thread,list);
+		Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size());
+		return summary;
 		
 	}
 }

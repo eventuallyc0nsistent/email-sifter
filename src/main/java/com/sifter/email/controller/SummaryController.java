@@ -50,7 +50,10 @@ public class SummaryController {
 		}
 		return false;
 	}
-
+	
+	private void modifyScoring(){
+		
+	}
 	/**
 	 * Builds the summary model
 	 * @param thread
@@ -158,9 +161,9 @@ public class SummaryController {
 					path = path+br.readLine();
 					
 					
-					thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
+					//thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
 					ArrayList<Phrase> list = new ArrayList<Phrase>();
-					list = aCtrl.getPhrases();
+					aCtrl.buildThreadAndPhraseList(SummaryController.class.getResource("/docs/"+path),thread,list);
 					SummaryController sCtrl = new SummaryController();
 					Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
 

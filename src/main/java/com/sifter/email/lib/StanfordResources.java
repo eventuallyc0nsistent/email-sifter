@@ -376,6 +376,8 @@ public class StanfordResources {
 
 			}
 		}
+		else
+			score += -1*Scoring.LEVEL_3_POS;
 		return score;
 	}
 

@@ -3,12 +3,12 @@ package com.sifter.email.lib;
 public enum NEEnum {
 	DATE(4),		
 	TIME(4), 		
-	LOCATION(4), 	
-	ORGANIZATION(3), 
-	DURATION(3),
-	PERSON(2), 	
+	LOCATION(5), 	
+	ORGANIZATION(5), 
+	DURATION(5),
+	PERSON(3), 	
 	NUMBER(2), 
-	MONEY(3); 	
+	MONEY(4); 	
 	private int score;
 	
 	private NEEnum(int i){
