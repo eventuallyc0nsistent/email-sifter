@@ -174,28 +174,28 @@ public class StanfordResources {
 				score += getPOSScore(token);
 
 				if(ne.equals(NEEnum.DATE.name())){
-					score += NEEnum.DATE.score();
+					score += Scoring.score_date;
 				}
 				else if(ne.equals(NEEnum.DURATION.name())){
-					score += NEEnum.DURATION.score();
+					score += Scoring.score_duration;
 				}
 				else if(ne.equals(NEEnum.LOCATION.name())){
-					score += NEEnum.LOCATION.score();
+					score += Scoring.score_location;
 				}
 				else if(ne.equals(NEEnum.MONEY.name())){
-					score += NEEnum.MONEY.score();
+					score += Scoring.score_money;
 				}
 				else if(ne.equals(NEEnum.NUMBER.name())){
-					score += NEEnum.NUMBER.score();
+					score += Scoring.score_number;
 				}
 				else if(ne.equals(NEEnum.ORGANIZATION.name())){
-					score += NEEnum.ORGANIZATION.score();
+					score += Scoring.score_organization;
 				}
 				else if(ne.equals(NEEnum.PERSON.name())){
-					score += NEEnum.PERSON.score();
+					score += Scoring.score_person;
 				}
 				else if(ne.equals(NEEnum.TIME.name())){
-					score += NEEnum.TIME.score();
+					score += Scoring.score_time;
 				}
 			}
 		}

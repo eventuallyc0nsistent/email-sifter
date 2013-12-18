@@ -50,9 +50,52 @@ public class SummaryController {
 		}
 		return false;
 	}
-	
-	private void modifyScoring(){
-		
+
+	/**
+	 * Modifies the scoring based on content in the phrases of the 1st email in the chain
+	 * Experimental*
+	 * @param thread
+	 */
+	private void modifyScoring(EmailThread thread){
+		Scoring.clear();
+		if(thread.getFirstEmailPhrases().size() <= 4){
+			for(String p : thread.getFirstEmailPhrases()){
+				if(p.matches(".*[wW]hat.*[Tt]ime.*")){
+					Scoring.score_time += 2;
+					Scoring.score_date += 1;
+				}
+				if(p.matches(".*[Tt]ime[ ]+.*")){
+					Scoring.score_time += 2;
+				}
+				if(p.matches(".*[wW]hen[ ]+.*")){
+					Scoring.score_time += 1;
+					Scoring.score_date += 1;
+				}
+				if(p.matches(".*[wW]here[ ]+.*[Mm]eeting.*")){
+					Scoring.score_location += 3;
+					Scoring.score_time += 1;
+					Scoring.score_date += 1;
+				}
+				if(p.matches(".*[wW]ho.*")){
+					Scoring.score_person += 1;
+				}
+				if(p.matches(".*[Hh]ow[ ]+.*[Ll]ong.*")){
+					Scoring.score_duration += 2;
+					Scoring.score_time += 1;
+					Scoring.score_date += 1;
+				}
+				if(p.matches(".*[Hh]ow[ ]+.*[Mm]any")){
+					Scoring.score_number += 1;
+				}
+				if(p.matches(".*[Ww]hat[ ]+.*[Aa]mount")){
+					Scoring.score_money += 1;
+					Scoring.score_number += 1;
+				}
+				if(p.matches(".*[Hh]ow[ ]+.*[Mm]oney")){
+					Scoring.score_money += 2;
+				}
+			}
+		}
 	}
 	/**
 	 * Builds the summary model
@@ -62,6 +105,7 @@ public class SummaryController {
 	 * @return
 	 */
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
+		modifyScoring(thread);
 		buildIndex(list,total);
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
 		HashMap<Integer,Integer> addedMessagePos = new HashMap<Integer,Integer>();
@@ -159,8 +203,8 @@ public class SummaryController {
 				if(!isError){
 					System.out.println("Enter name of document: ");
 					path = path+br.readLine();
-					
-					
+
+
 					//thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
 					ArrayList<Phrase> list = new ArrayList<Phrase>();
 					aCtrl.buildThreadAndPhraseList(SummaryController.class.getResource("/docs/"+path),thread,list);
@@ -200,54 +244,14 @@ public class SummaryController {
 					}
 					System.out.println();
 				}
-				
-				
-				
+
+
+
 			}catch(Exception nfe){
 				nfe.printStackTrace();
 				System.err.println("Issue with parsing the document. Please check if the document exists before running this.");
 			}
 
-
-
-//			thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
-//			ArrayList<Phrase> list = new ArrayList<Phrase>();
-//			list = aCtrl.getPhrases();
-//			SummaryController sCtrl = new SummaryController();
-//			Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
-//
-//
-//			System.out.println("All the people actively involved in the chain (all who wrote mails): \n");
-//			for(String s:summary.getMeta().getPeopleList()){
-//				System.out.println("\t"+s);
-//			}
-//			System.out.println();
-//			System.out.println("All the URLs mentioned in the chain: \n");
-//			for(String s:summary.getMeta().getUrlList()){
-//				System.out.println("\t"+s);
-//			}
-//			System.out.println();
-//			System.out.println("All the email addresses in the chain: \n");
-//			for(String s:summary.getMeta().getEmailList()){
-//				System.out.println("\t"+s);
-//			}
-//			System.out.println();
-//			System.out.println("All the times and dates mentioned in the chain: \n");
-//			for(String s:summary.getMeta().getDateTimeList()){
-//				System.out.println("\t"+s);
-//			}
-//			System.out.println();
-//			System.out.println();
-//
-//			System.out.println("Subject: \n");
-//			System.out.println("\t*\t"+summary.getSubject());
-//			System.out.println();
-//
-//			System.out.println("Summary phrases: \n");
-//			for(String s:summary.getSummary()){
-//				System.out.println("\t"+s);
-//			}
-//			System.out.println();
 		}
 
 

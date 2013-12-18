@@ -257,6 +257,7 @@ public class AnnotController {
 			str = str.replaceAll("Cc.*\n", "");
 			str = str.replaceAll("``.*''", "");
 			str = str.replaceAll("--\n.*", "");
+			str = str.replaceAll("On[ ]+[A-Za-z]{3}[ ]*,[ ]*[0-9]+[ ]*,.*","");
 			str = str.replaceAll("\n.*\\|.*", "");
 			str = str.replaceAll("\n", " ");
 			return str;
