@@ -191,6 +191,7 @@ public class GateResources {
 	
 	public void freeResources(){
 		corpus.cleanup();
+		Factory.deleteResource(corpus);
 		
 	}
 	

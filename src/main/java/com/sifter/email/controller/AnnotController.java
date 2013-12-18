@@ -83,6 +83,7 @@ public class AnnotController {
 		}
 		meta.setPeopleList(peopleSet);
 		thread.setMeta(meta);
+		gr.freeResources();
 		return thread;
 	}
 	
@@ -223,6 +224,7 @@ public class AnnotController {
 			str = str.replaceAll("Should'nt", "Should not");
 			str = str.replaceAll("should'nt", "should not");
 			str = str.replaceAll("'ve", "have");
+			str = str.replaceAll("'ve", "have");
 			str = str.replaceAll("'re", "are");
 			str = str.replaceAll("[Ss]ent[ ]+[Ff]rom[ ]+[Mm]y[ ]+.*", "");
 			str = str.replaceAll("[Ss]ent[ ]+[Vv]ia[ ]+B.*", "");
@@ -232,7 +234,7 @@ public class AnnotController {
 			str = str.replaceAll("\n((([Rr]egards)|([Th]anks)|([Bb]est)|([W]arm)).*[,.!]?).*([A-Z][a-zA-Z0-9,.-])*[ ]*([A-Z][a-zA-Z0-9,.-]*)*[ ]*.*\n?.*", "");
 			//Matches a few unwanted dates
 			str = str.replaceAll("[\\w]+[ ]+[\\d]+[ ]*,[ ]*[\\d]+[ ]*at[ ]*[\\d]+[ ]*:[ ]*[\\d]+[ ]*[\\w]*", "");
-			//Matches dates like this Wed, 19 Dec 2012 21:20:40+0800
+			//Matches dates like this: Wed, 19 Dec 2012 21:20:40+0800
 			str = str.replaceAll("[A-Za-z]{3}[, ]+[0-9]+((th)|(rd))?[ ]*[,]?[ ]*[0-9]+[ ]*(at)?[ ]*.*", "");
 			str = str.replaceAll("NOTICE.*", "");
 			str = str.replaceAll("<.*>.*", "");

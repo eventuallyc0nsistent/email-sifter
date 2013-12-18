@@ -61,7 +61,7 @@ public class SummaryController {
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
 		buildIndex(list,total);
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
-		HashSet<Integer> addedMessagePos = new HashSet<Integer>();
+		HashMap<Integer,Integer> addedMessagePos = new HashMap<Integer,Integer>();
 		Collections.sort(list,new PhraseScoreComparator());
 		Summary summary = new Summary();
 
@@ -69,10 +69,17 @@ public class SummaryController {
 
 		while(phrases.size() <= 10 && i < list.size()){
 			Phrase p = list.get(i++);
-			if(!addedMessagePos.contains(p.getPosition()) || total <= 2){
-				if(!isRepeated(phrases,p)){
+			if(!addedMessagePos.containsKey(p.getPosition()) || (addedMessagePos.containsKey(p.getPosition()) && (addedMessagePos.get(p.getPosition()) <= 2)) || total <= 3){
+				p.setPhrase(AnnotController.cleanString(p.getPhrase().trim()));
+				if(!isRepeated(phrases,p) && p.getPhrase().split("[^A-Za-z0-9]+").length > 2){
 					phrases.add(p);
-					addedMessagePos.add(p.getPosition());
+					if(addedMessagePos.containsKey(p.getPosition())){
+						int val = addedMessagePos.get(p.getPosition());
+						addedMessagePos.put(p.getPosition(),val+1);
+					}
+					else{
+						addedMessagePos.put(p.getPosition(),1);
+					}
 				}
 			}
 		}
@@ -124,7 +131,7 @@ public class SummaryController {
 
 	public static void main(String[] args) throws Exception{
 		AnnotController aCtrl = new AnnotController();
-
+		EmailThread thread = new EmailThread();
 		while(true){
 			String path = "";
 
@@ -132,60 +139,112 @@ public class SummaryController {
 			System.out.println();
 			System.out.println("Enter 1 for practice set and 2 for test set and 0 to exit:");
 			try{
-				int i = Integer.parseInt(br.readLine());
-				if(i == 2){
-					path = "testset/test/";
+				boolean isError = false;
+				try{
+					int i = Integer.parseInt(br.readLine());
+					if(i == 2){
+						path = "testset/test/";
+					}
+					else if(i == 0){
+						break;
+					}
 				}
-				else if(i == 0){
-					break;
+				catch(NumberFormatException nfe){
+					System.err.println("Please enter only 0, 1 or 2");
+					isError = true;
 				}
+				if(!isError){
+					System.out.println("Enter name of document: ");
+					path = path+br.readLine();
+					
+					
+					thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
+					ArrayList<Phrase> list = new ArrayList<Phrase>();
+					list = aCtrl.getPhrases();
+					SummaryController sCtrl = new SummaryController();
+					Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
 
-				System.out.println("Enter name of document: ");
-				path = path+br.readLine();
-			}catch(NumberFormatException nfe){
-				System.err.println("Invalid Format!");
+
+					System.out.println("All the people actively involved in the chain (all who wrote mails): \n");
+					for(String s:summary.getMeta().getPeopleList()){
+						System.out.println("\t"+s);
+					}
+					System.out.println();
+					System.out.println("All the URLs mentioned in the chain: \n");
+					for(String s:summary.getMeta().getUrlList()){
+						System.out.println("\t"+s);
+					}
+					System.out.println();
+					System.out.println("All the email addresses in the chain: \n");
+					for(String s:summary.getMeta().getEmailList()){
+						System.out.println("\t"+s);
+					}
+					System.out.println();
+					System.out.println("All the times and dates mentioned in the chain: \n");
+					for(String s:summary.getMeta().getDateTimeList()){
+						System.out.println("\t"+s);
+					}
+					System.out.println();
+					System.out.println();
+
+					System.out.println("Subject: \n");
+					System.out.println("\t*\t"+summary.getSubject());
+					System.out.println();
+
+					System.out.println("Summary phrases: \n");
+					for(String s:summary.getSummary()){
+						System.out.println("\t"+s);
+					}
+					System.out.println();
+				}
+				
+				
+				
+			}catch(Exception nfe){
+				nfe.printStackTrace();
+				System.err.println("Issue with parsing the document. Please check if the document exists before running this.");
 			}
 
 
 
-			EmailThread thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
-			ArrayList<Phrase> list = new ArrayList<Phrase>();
-			list = aCtrl.getPhrases();
-			SummaryController sCtrl = new SummaryController();
-			Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
-
-
-			System.out.println("All the people actively involved in the chain (all who wrote mails): \n");
-			for(String s:summary.getMeta().getPeopleList()){
-				System.out.println("\t"+s);
-			}
-			System.out.println();
-			System.out.println("All the URLs mentioned in the chain: \n");
-			for(String s:summary.getMeta().getUrlList()){
-				System.out.println("\t"+s);
-			}
-			System.out.println();
-			System.out.println("All the email addresses in the chain: \n");
-			for(String s:summary.getMeta().getEmailList()){
-				System.out.println("\t"+s);
-			}
-			System.out.println();
-			System.out.println("All the times and dates mentioned in the chain: \n");
-			for(String s:summary.getMeta().getDateTimeList()){
-				System.out.println("\t"+s);
-			}
-			System.out.println();
-			System.out.println();
-
-			System.out.println("Subject: \n");
-			System.out.println("\t*\t"+summary.getSubject());
-			System.out.println();
-
-			System.out.println("Summary phrases: \n");
-			for(String s:summary.getSummary()){
-				System.out.println("\t"+s);
-			}
-			System.out.println();
+//			thread = aCtrl.buildThread(SummaryController.class.getResource("/docs/"+path));
+//			ArrayList<Phrase> list = new ArrayList<Phrase>();
+//			list = aCtrl.getPhrases();
+//			SummaryController sCtrl = new SummaryController();
+//			Summary summary = sCtrl.getSummary(thread, list, thread.getThreadParts().size()+1);
+//
+//
+//			System.out.println("All the people actively involved in the chain (all who wrote mails): \n");
+//			for(String s:summary.getMeta().getPeopleList()){
+//				System.out.println("\t"+s);
+//			}
+//			System.out.println();
+//			System.out.println("All the URLs mentioned in the chain: \n");
+//			for(String s:summary.getMeta().getUrlList()){
+//				System.out.println("\t"+s);
+//			}
+//			System.out.println();
+//			System.out.println("All the email addresses in the chain: \n");
+//			for(String s:summary.getMeta().getEmailList()){
+//				System.out.println("\t"+s);
+//			}
+//			System.out.println();
+//			System.out.println("All the times and dates mentioned in the chain: \n");
+//			for(String s:summary.getMeta().getDateTimeList()){
+//				System.out.println("\t"+s);
+//			}
+//			System.out.println();
+//			System.out.println();
+//
+//			System.out.println("Subject: \n");
+//			System.out.println("\t*\t"+summary.getSubject());
+//			System.out.println();
+//
+//			System.out.println("Summary phrases: \n");
+//			for(String s:summary.getSummary()){
+//				System.out.println("\t"+s);
+//			}
+//			System.out.println();
 		}
 
 
