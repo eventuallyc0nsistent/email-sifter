@@ -32,8 +32,7 @@ public class MyResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getIt() throws MalformedURLException {
-        //return "Got it!";
-    	return new File(getClass().getResource("/docs/Gigzolo rehearsal.pdf").getPath()).toURI().toURL().toString();
+        return "Got it!";
     }
     
     @Path("getname")

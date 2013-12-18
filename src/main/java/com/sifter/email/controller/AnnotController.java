@@ -17,7 +17,7 @@ public class AnnotController {
 		gr.initialize();
 	}
 	/**
-	 * Builds Thread
+	 * Builds Thread and pulls phrases from the thread
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -85,7 +85,7 @@ public class AnnotController {
 		thread.setMeta(meta);
 		gr.freeResources();
 		
-		//set phrases
+		//get all the phrases for the thread
 		getPhrases(thread,phrases);
 		
 	}
@@ -109,14 +109,11 @@ public class AnnotController {
 		meta.setUrlList(buildAnnotsFromKind(AnnotEnum.Address.name(), KindEnum.url.name()));
 		//DateTime
 		meta.setDateTimeList(buildAnnots(AnnotEnum.Date.name()));
-		//People
-		//meta.setPeopleList(buildAnnots(AnnotEnum.Person.name()));
-		//Address
 		return meta;
 	}
 	
 	/**
-	 * Gets phrases as Phrase list
+	 * Gets all noun and verb phrases using Stanford NLP resources like sentence splitter and POS tagger
 	 * @return
 	 */
 	
@@ -126,8 +123,6 @@ public class AnnotController {
 		int i = 0;
 		
 		ArrayList<String> strPhrases = new ArrayList<String>();
-//		sr.buildPhrases(strPhrases,thread.getSubject());
-//		buildPhraseList(phrases,strPhrases,i);
 		HashSet<String> firstEmailPhrases = new HashSet<String>();
 		boolean isFirstEmail = true;
 		for(ThreadPart tp: thread.getThreadParts()){
@@ -141,7 +136,7 @@ public class AnnotController {
 		thread.setFirstEmailPhrases(firstEmailPhrases);
 	}
 	/**
-	 * B
+	 * Builds phrase list from a list of strings. Adds position of phrase(which email it belongs to) and sets score to 0
 	 * @param phrases
 	 * @param strPhrases
 	 * @param pos
@@ -193,7 +188,7 @@ public class AnnotController {
 		return list;
 	}
 	/**
-	 * B
+	 * Builds annotations with the "kind" feature in GATE's featuremap of an annotation
 	 * @param annot
 	 * @param kind
 	 * @return
@@ -213,13 +208,15 @@ public class AnnotController {
 	}
 	
 	/**
-	 * Cleans the string 
+	 * Cleans the string. Mainly used to clean body of an email, and if required phrases.
 	 * @param str
 	 * @return
 	 */
 	public static String cleanString(String str){
 		if(str != null){
+			//Removes the phrase Quoted 
 			str = str.replaceAll("Quoted.*\n?.*","");
+			//These are to remove apostrophes to get better phrases
 			str = str.replaceAll("'d", " would");
 			str = str.replaceAll("'m", " am");
 			str = str.replaceAll("'ll", " will");
@@ -236,6 +233,7 @@ public class AnnotController {
 			str = str.replaceAll("'ve", "have");
 			str = str.replaceAll("'ve", "have");
 			str = str.replaceAll("'re", "are");
+			//Removes all automatic signatures assigned by iPhones and Blackberrys
 			str = str.replaceAll("[Ss]ent[ ]+[Ff]rom[ ]+[Mm]y[ ]+.*", "");
 			str = str.replaceAll("[Ss]ent[ ]+[Vv]ia[ ]+B.*", "");
 			str = str.replaceAll("https://mail.google.com[/.?=&\\w\\d]*", "");
@@ -250,6 +248,7 @@ public class AnnotController {
 			str = str.replaceAll("<.*>.*", "");
 			str = str.replaceAll("\\[.*\\]", "");
 			str = str.replaceAll("__+.*", "");
+			//removes unwanted characters added by Stanford Parser
 			str = str.replaceAll("-RSB-.*", "");
 			str = str.replaceAll("-LSB-.*", "");
 			str = str.replaceAll("-RRB-.*", "");
@@ -257,6 +256,7 @@ public class AnnotController {
 			str = str.replaceAll("Cc.*\n", "");
 			str = str.replaceAll("``.*''", "");
 			str = str.replaceAll("--\n.*", "");
+			//Removes residual dates
 			str = str.replaceAll("On[ ]+[A-Za-z]{3}[ ]*,[ ]*[0-9]+[ ]*,.*","");
 			str = str.replaceAll("\n.*\\|.*", "");
 			str = str.replaceAll("\n", " ");

@@ -105,6 +105,9 @@ public class SummaryController {
 	 * @return
 	 */
 	public Summary getSummary(EmailThread thread, ArrayList<Phrase> list, int total){
+		//Call to modify scoring based on the first mail's content. This is still experimental
+		//No significant boost in result accuracy
+		
 		modifyScoring(thread);
 		buildIndex(list,total);
 		ArrayList<Phrase> phrases = new ArrayList<Phrase>();
@@ -224,11 +227,6 @@ public class SummaryController {
 					System.out.println();
 					System.out.println("All the email addresses in the chain: \n");
 					for(String s:summary.getMeta().getEmailList()){
-						System.out.println("\t"+s);
-					}
-					System.out.println();
-					System.out.println("All the times and dates mentioned in the chain: \n");
-					for(String s:summary.getMeta().getDateTimeList()){
 						System.out.println("\t"+s);
 					}
 					System.out.println();
